@@ -27,8 +27,7 @@ class YoloNode(Node):
         self.freq = 10
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-        self.waypoint_follower = TurtleBotWaypointFollower()
-
+       
 
         # Timer variables
         self.start_time = None  # Store start time of movement
@@ -52,9 +51,11 @@ class YoloNode(Node):
 
         #self.blue_range = ((35, 50, 50), (85, 255, 255)) #green but not changign naming
         self.blue_range = ((30, 40, 40), (90, 255, 255)) # wider range for more green/blue vlaues --> remember im nto changign name so this is called blue but its green 
+        #self.blue_range = ((0, 0, 200), (180, 50, 255)) #white
 
-        self.yellow_range = ((20, 100, 100), (40, 255, 255))
-        #self.blue_range = ((90, 50, 50), (130, 255, 255))   # HSV range for blue (TurtleBot marker)
+        #self.yellow_range = ((20, 100, 100), (40, 255, 255))
+        #self.yellow_range = ((90, 50, 50), (130, 255, 255))   # HSV range for blue (TurtleBot marker)
+        self.yellow_range = ((10, 100, 100), (30, 255, 255)) #orange
 
         # self.color_name = "pink"
         # self.color_range = ((145, 50, 50), (165, 255, 255))  # HSV range for pink
@@ -80,12 +81,12 @@ class YoloNode(Node):
         if self.fx is None:
             self.fx, self.fy = msg.k[0], msg.k[4]  # Focal lengths
             self.cx, self.cy = msg.k[2], msg.k[5]  # Optical center
-            self.get_logger().info(f"✅ Camera Info Received: fx={self.fx}, fy={self.fy}, cx={self.cx}, cy={self.cy}")
+            self.get_logger().info(f" 📷 Camera Info Received: fx={self.fx}, fy={self.fy}, cx={self.cx}, cy={self.cy}")
 
     def depth_callback(self, msg):
         """Store the latest depth frame and print a sample value."""
         self.depth_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
-        self.get_logger().info(f"✅ Depth Image Received: First Depth Value = {self.depth_image[240, 320]}")  # Sample at center pixel
+        self.get_logger().info(f"📷 Depth Image Received: First Depth Value = {self.depth_image[240, 320]}")  # Sample at center pixel
 
     def broadcast_all_tf(self):
         """Continuously broadcast the latest known TF frames to keep them in RViz."""
@@ -162,7 +163,7 @@ class YoloNode(Node):
             if yellow_world_coords:
                 
                 Xy, Yy, Zy = yellow_world_coords
-                self.get_logger().info(f"✅ TurtleBot Front detected! X={Xy:.3f}, Y={Yy:.3f}, Z={Zy:.3f}")
+                self.get_logger().info(f" ✴️  TurtleBot Front detected! X={Xy:.3f}, Y={Yy:.3f}, Z={Zy:.3f}")
                 self.broadcast_turtlebot_front_tf(Xb, Yb, Zb, Xy, Yy, Zy)  # ✅ Correct frame hierarchy
 
                 # ✅ Compute yaw angle (orientation)
@@ -210,7 +211,7 @@ class YoloNode(Node):
         world_coords = self.pixel_to_world(cX, cY)
         if world_coords:
             X, Y, Z = world_coords
-            self.get_logger().info(f"🎯 {label} Position: X={X:.3f}, Y={Y:.3f}, Z={Z:.3f}")
+            # self.get_logger().info(f"🎯 {label} Position: X={X:.3f}, Y={Y:.3f}, Z={Z:.3f}")
 
         # Draw on image
         cv2.circle(cv_image, (cX, cY), 5, draw_color, -1)
@@ -236,12 +237,13 @@ class YoloNode(Node):
 
     def track_turtlebot_position(self, Xb, Yb, Zb):
         """Publishes TurtleBot's smoothed position and ensures TF updates even when stationary."""
+        
+        # Create and publish TurtleBot position message
         turtlebot_msg = Float32MultiArray()
-        turtlebot_msg.data = [Xb, Yb, Zb]  
+        turtlebot_msg.data = [Xb, Yb, Zb]
         self.turtlebot_position_pub.publish(turtlebot_msg)
 
-        # Update TurtleBot position for waypoint following
-        self.waypoint_follower.update_turtlebot_position(Xb, Yb)
+        self.get_logger().info(f"📡 Published TurtleBot Position: X={Xb:.3f}, Y={Yb:.3f}, Z={Zb:.3f}")
 
         # Always update latest known TurtleBot position
         self.latest_blue_world_coords = (Xb, Yb, Zb)
@@ -414,7 +416,7 @@ class YoloNode(Node):
             t.transform.rotation.w = quat[3]
 
             self.tf_broadcaster.sendTransform(t)
-            self.get_logger().info(f"✅ Successfully Broadcasted TurtleBot Front TF! Yaw={yaw:.3f} rad ({math.degrees(yaw):.1f}°)")
+            self.get_logger().info(f"✴️ Successfully Broadcasted TurtleBot Front TF! Yaw={yaw:.3f} rad ({math.degrees(yaw):.1f}°)")
 
         except Exception as e:
             self.get_logger().error(f"❌ Failed to publish TF transform for TurtleBot Front: {e}")
