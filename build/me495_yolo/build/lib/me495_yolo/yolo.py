@@ -588,22 +588,62 @@ class YoloNode(Node):
     #     except Exception as e:
     #         self.get_logger().error(f"Failed to publish TF transform for TurtleBot front: {e}")
 
+    # def broadcast_turtlebot_front_tf(self, Xb, Yb, Zb, Xy, Yy, Zy):
+    #     """Broadcast transformation from TurtleBot's base to its front marker."""
+    #     try:
+    #         self.get_logger().info(f"📡 Broadcasting TurtleBot Front TF: Parent (Blue): X={Xb:.3f}, Y={Yb:.3f}, Z={Zb:.3f} | Front (Yellow): X={Xy:.3f}, Y={Yy:.3f}, Z={Zy:.3f}")
+
+    #         t = TransformStamped()
+    #         t.header.stamp = self.get_clock().now().to_msg()
+    #         t.header.frame_id = 'turtlebot_blue_object'  # ✅ Parent frame
+    #         t.child_frame_id = 'turtlebot_front'  # ✅ Child frame
+
+    #         # ✅ Relative translation from TurtleBot base to front marker
+    #         t.transform.translation.x = float(Xy - Xb)
+    #         t.transform.translation.y = float(Yy - Yb)
+    #         t.transform.translation.z = float(Zy - Zb)  # Keep Z difference
+
+    #         # ✅ Compute yaw angle (orientation)
+    #         yaw = math.atan2(Yy - Yb, Xy - Xb)
+    #         quat = tf_transformations.quaternion_from_euler(0, 0, yaw)
+    #         t.transform.rotation.x = quat[0]
+    #         t.transform.rotation.y = quat[1]
+    #         t.transform.rotation.z = quat[2]
+    #         t.transform.rotation.w = quat[3]
+
+    #         self.tf_broadcaster.sendTransform(t)
+    #         self.get_logger().info(f"✅ Successfully Sent TurtleBot Front TF! Yaw: {yaw:.3f} rad ({math.degrees(yaw):.1f}°)")
+
+    #     except Exception as e:
+    #         self.get_logger().error(f"❌ Failed to publish TF transform for TurtleBot Front: {e}")
+
+
     def broadcast_turtlebot_front_tf(self, Xb, Yb, Zb, Xy, Yy, Zy):
-        """Broadcast transformation from TurtleBot's base to its front marker."""
+        """Broadcast transformation from TurtleBot base to its front marker, ensuring stability."""
         try:
-            self.get_logger().info(f"📡 Broadcasting TurtleBot Front TF: Parent (Blue): X={Xb:.3f}, Y={Yb:.3f}, Z={Zb:.3f} | Front (Yellow): X={Xy:.3f}, Y={Yy:.3f}, Z={Zy:.3f}")
+            # ✅ Use last known TurtleBot position if flickering
+            if hasattr(self, 'last_valid_turtlebot_position'):
+                if abs(Xb - self.last_valid_turtlebot_position[0]) > 0.1 or \
+                abs(Yb - self.last_valid_turtlebot_position[1]) > 0.1:
+                    self.get_logger().warn("⚠️ Large jump detected in TurtleBot position! Using last known position.")
+                    Xb, Yb, Zb = self.last_valid_turtlebot_position
+            
+            # ✅ Store last valid TurtleBot position
+            self.last_valid_turtlebot_position = (Xb, Yb, Zb)
+
+            self.get_logger().info(f"📡 Broadcasting TurtleBot Front TF: Parent: (Xb={Xb:.3f}, Yb={Yb:.3f}, Zb={Zb:.3f}) | Front: (Xy={Xy:.3f}, Yy={Yy:.3f}, Zy={Zy:.3f})")
 
             t = TransformStamped()
             t.header.stamp = self.get_clock().now().to_msg()
-            t.header.frame_id = 'turtlebot_blue_object'  # ✅ Parent frame
-            t.child_frame_id = 'turtlebot_front'  # ✅ Child frame
+            t.header.frame_id = 'turtlebot_blue_object'  # Base of TurtleBot
+            t.child_frame_id = 'turtlebot_front'  # New frame for front marker
 
-            # ✅ Relative translation from TurtleBot base to front marker
+            # ✅ Ensure relative transformation is correct
             t.transform.translation.x = float(Xy - Xb)
             t.transform.translation.y = float(Yy - Yb)
-            t.transform.translation.z = float(Zy - Zb)  # Keep Z difference
+            t.transform.translation.z = float(Zy - Zb)
 
-            # ✅ Compute yaw angle (orientation)
+            # ✅ Compute yaw from TurtleBot base to front
             yaw = math.atan2(Yy - Yb, Xy - Xb)
             quat = tf_transformations.quaternion_from_euler(0, 0, yaw)
             t.transform.rotation.x = quat[0]
@@ -612,12 +652,10 @@ class YoloNode(Node):
             t.transform.rotation.w = quat[3]
 
             self.tf_broadcaster.sendTransform(t)
-            self.get_logger().info(f"✅ Successfully Sent TurtleBot Front TF! Yaw: {yaw:.3f} rad ({math.degrees(yaw):.1f}°)")
+            self.get_logger().info(f"✅ Successfully Broadcasted TurtleBot Front TF! Yaw={yaw:.3f} rad ({math.degrees(yaw):.1f}°)")
 
         except Exception as e:
             self.get_logger().error(f"❌ Failed to publish TF transform for TurtleBot Front: {e}")
-
-
 
 
     def get_turtlebot_position(self):
