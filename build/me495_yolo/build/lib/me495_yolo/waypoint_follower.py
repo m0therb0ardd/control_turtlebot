@@ -80,7 +80,6 @@ class TurtleBotWaypointFollower(Node):
             self.get_logger().warn("⚠️ Received invalid TurtleBot orientation message!")
 
 
-
     def waypoints_callback(self, msg):
         """Receive waypoints and store them."""
         self.current_waypoints = [(pose.pose.position.x, pose.pose.position.y) for pose in msg.poses]

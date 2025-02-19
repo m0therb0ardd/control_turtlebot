@@ -29,7 +29,7 @@ setup(
             'waypoint = me495_yolo.waypoint:main',
             'waypoint_follower = me495_yolo.waypoint_follower:main',
             'square_motion = me495_yolo.square_motion:main',
-            'odom_yaw_monitor= me495_yolo.odom_yaw_monitor:main',
+            'rotate_to_90= me495_yolo.rotate_to_90:main',
             
         ],
     },

@@ -9,6 +9,7 @@ setup.py
 ../build/me495_yolo/me495_yolo.egg-info/zip-safe
 me495_yolo/__init__.py
 me495_yolo/odom_yaw_monitor.py
+me495_yolo/rotate_to_90.py
 me495_yolo/waypoint.py
 me495_yolo/waypoint_follower.py
 me495_yolo/waypoint_hw.py

@@ -1,0 +1,5 @@
+  File "/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/yolo.py", line 418
+    t.header.frame_id = 'turtlebot_blue_object'  e
+                                                 ^
+SyntaxError: invalid syntax
+
