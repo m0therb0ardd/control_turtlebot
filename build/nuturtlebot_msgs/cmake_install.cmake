@@ -1,4 +1,4 @@
-# Install script for directory: /home/catherine-maglione/yolo_backup/nuturtlebot_msgs
+# Install script for directory: /home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -375,11 +375,11 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nuturtlebot_msgs/msg" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/nuturtlebot_msgs/msg/SensorData.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nuturtlebot_msgs/msg" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/msg/SensorData.msg")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nuturtlebot_msgs/msg" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/nuturtlebot_msgs/msg/WheelCommands.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nuturtlebot_msgs/msg" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/msg/WheelCommands.msg")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -670,7 +670,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nuturtlebot_msgs" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/nuturtlebot_msgs/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/nuturtlebot_msgs" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/package.xml")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

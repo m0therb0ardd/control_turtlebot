@@ -1,4 +1,4 @@
-# Install script for directory: /home/catherine-maglione/yolo_backup/numsr_turtlebot
+# Install script for directory: /home/catherine-maglione/yolo_backup/src/numsr_turtlebot
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -122,7 +122,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/numsr_turtlebot" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/numsr_turtlebot/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/numsr_turtlebot" TYPE FILE FILES "/home/catherine-maglione/yolo_backup/src/numsr_turtlebot/package.xml")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)

@@ -1,0 +1,7 @@
+tag_family: "tag36h11"  # Tag family to detect
+tag_border: 1           # Border size around the tag
+tag_decimate: 1.0       # Image decimation for faster processing
+tag_blur: 0.0           # Gaussian blur for noise reduction
+tag_threads: 4          # Number of threads for detection
+tag_refine_edges: 1     # Refine tag edges for better accuracy
+tag_debug: 0            # Debug mode (0 = off, 1 = on)

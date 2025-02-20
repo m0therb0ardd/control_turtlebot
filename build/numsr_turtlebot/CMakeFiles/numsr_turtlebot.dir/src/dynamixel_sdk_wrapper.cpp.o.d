@@ -1,7 +1,7 @@
 CMakeFiles/numsr_turtlebot.dir/src/dynamixel_sdk_wrapper.cpp.o: \
- /home/catherine-maglione/yolo_backup/numsr_turtlebot/src/dynamixel_sdk_wrapper.cpp \
+ /home/catherine-maglione/yolo_backup/src/numsr_turtlebot/src/dynamixel_sdk_wrapper.cpp \
  /usr/include/stdc-predef.h \
- /home/catherine-maglione/yolo_backup/numsr_turtlebot/include/numsr_turtlebot/dynamixel_sdk_wrapper.hpp \
+ /home/catherine-maglione/yolo_backup/src/numsr_turtlebot/include/numsr_turtlebot/dynamixel_sdk_wrapper.hpp \
  /opt/ros/jazzy/include/rcutils/rcutils/logging_macros.h \
  /opt/ros/jazzy/include/rcutils/rcutils/logging.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \

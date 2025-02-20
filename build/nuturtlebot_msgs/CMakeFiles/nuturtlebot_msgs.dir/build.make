@@ -53,7 +53,7 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/catherine-maglione/yolo_backup/nuturtlebot_msgs
+CMAKE_SOURCE_DIR = /home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs
@@ -66,8 +66,8 @@ include CMakeFiles/nuturtlebot_msgs.dir/compiler_depend.make
 # Include the progress variables for this target.
 include CMakeFiles/nuturtlebot_msgs.dir/progress.make
 
-CMakeFiles/nuturtlebot_msgs: /home/catherine-maglione/yolo_backup/nuturtlebot_msgs/msg/SensorData.msg
-CMakeFiles/nuturtlebot_msgs: /home/catherine-maglione/yolo_backup/nuturtlebot_msgs/msg/WheelCommands.msg
+CMakeFiles/nuturtlebot_msgs: /home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/msg/SensorData.msg
+CMakeFiles/nuturtlebot_msgs: /home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/msg/WheelCommands.msg
 CMakeFiles/nuturtlebot_msgs: /opt/ros/jazzy/share/builtin_interfaces/msg/Duration.idl
 CMakeFiles/nuturtlebot_msgs: /opt/ros/jazzy/share/builtin_interfaces/msg/Time.idl
 
@@ -84,6 +84,6 @@ CMakeFiles/nuturtlebot_msgs.dir/clean:
 .PHONY : CMakeFiles/nuturtlebot_msgs.dir/clean
 
 CMakeFiles/nuturtlebot_msgs.dir/depend:
-	cd /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/catherine-maglione/yolo_backup/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs/CMakeFiles/nuturtlebot_msgs.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs /home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs/CMakeFiles/nuturtlebot_msgs.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/nuturtlebot_msgs.dir/depend
 

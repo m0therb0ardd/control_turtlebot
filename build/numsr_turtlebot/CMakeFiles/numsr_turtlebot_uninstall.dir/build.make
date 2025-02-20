@@ -53,7 +53,7 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/catherine-maglione/yolo_backup/numsr_turtlebot
+CMAKE_SOURCE_DIR = /home/catherine-maglione/yolo_backup/src/numsr_turtlebot
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/catherine-maglione/yolo_backup/build/numsr_turtlebot
@@ -82,6 +82,6 @@ CMakeFiles/numsr_turtlebot_uninstall.dir/clean:
 .PHONY : CMakeFiles/numsr_turtlebot_uninstall.dir/clean
 
 CMakeFiles/numsr_turtlebot_uninstall.dir/depend:
-	cd /home/catherine-maglione/yolo_backup/build/numsr_turtlebot && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/catherine-maglione/yolo_backup/numsr_turtlebot /home/catherine-maglione/yolo_backup/numsr_turtlebot /home/catherine-maglione/yolo_backup/build/numsr_turtlebot /home/catherine-maglione/yolo_backup/build/numsr_turtlebot /home/catherine-maglione/yolo_backup/build/numsr_turtlebot/CMakeFiles/numsr_turtlebot_uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/catherine-maglione/yolo_backup/build/numsr_turtlebot && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/catherine-maglione/yolo_backup/src/numsr_turtlebot /home/catherine-maglione/yolo_backup/src/numsr_turtlebot /home/catherine-maglione/yolo_backup/build/numsr_turtlebot /home/catherine-maglione/yolo_backup/build/numsr_turtlebot /home/catherine-maglione/yolo_backup/build/numsr_turtlebot/CMakeFiles/numsr_turtlebot_uninstall.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/numsr_turtlebot_uninstall.dir/depend
 

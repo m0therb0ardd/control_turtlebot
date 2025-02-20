@@ -1,5 +1,5 @@
 CMakeFiles/numsr_turtlebot.dir/src/numsr_turtlebot.cpp.o: \
- /home/catherine-maglione/yolo_backup/numsr_turtlebot/src/numsr_turtlebot.cpp \
+ /home/catherine-maglione/yolo_backup/src/numsr_turtlebot/src/numsr_turtlebot.cpp \
  /usr/include/stdc-predef.h \
  /opt/ros/jazzy/include/turtlebot3_msgs/turtlebot3_msgs/srv/sound.hpp \
  /opt/ros/jazzy/include/turtlebot3_msgs/turtlebot3_msgs/srv/detail/sound__struct.hpp \
@@ -223,7 +223,7 @@ CMakeFiles/numsr_turtlebot.dir/src/numsr_turtlebot.cpp.o: \
  /opt/ros/jazzy/include/rcutils/rcutils/sha256.h \
  /opt/ros/jazzy/include/rosidl_runtime_c/rosidl_runtime_c/visibility_control.h \
  /opt/ros/jazzy/include/rosidl_runtime_cpp/rosidl_typesupport_cpp/message_type_support.hpp \
- /home/catherine-maglione/yolo_backup/numsr_turtlebot/include/numsr_turtlebot/dynamixel_sdk_wrapper.hpp \
+ /home/catherine-maglione/yolo_backup/src/numsr_turtlebot/include/numsr_turtlebot/dynamixel_sdk_wrapper.hpp \
  /opt/ros/jazzy/include/rcutils/rcutils/logging_macros.h \
  /opt/ros/jazzy/include/rcutils/rcutils/logging.h \
  /opt/ros/jazzy/include/rcutils/rcutils/error_handling.h \
@@ -258,7 +258,7 @@ CMakeFiles/numsr_turtlebot.dir/src/numsr_turtlebot.cpp.o: \
  /usr/include/c++/13/bits/unique_lock.h /usr/include/c++/13/thread \
  /usr/include/c++/13/bits/std_thread.h \
  /usr/include/c++/13/bits/this_thread_sleep.h \
- /home/catherine-maglione/yolo_backup/numsr_turtlebot/include/numsr_turtlebot/control_table.hpp \
+ /home/catherine-maglione/yolo_backup/src/numsr_turtlebot/include/numsr_turtlebot/control_table.hpp \
  /opt/ros/jazzy/include/rclcpp/rclcpp/rclcpp.hpp \
  /usr/include/c++/13/csignal /usr/include/signal.h \
  /usr/include/x86_64-linux-gnu/bits/signum-generic.h \

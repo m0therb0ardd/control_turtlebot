@@ -395,7 +395,7 @@ numsr_turtlebot_BINARY_DIR:STATIC=/home/catherine-maglione/yolo_backup/build/num
 numsr_turtlebot_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-numsr_turtlebot_SOURCE_DIR:STATIC=/home/catherine-maglione/yolo_backup/numsr_turtlebot
+numsr_turtlebot_SOURCE_DIR:STATIC=/home/catherine-maglione/yolo_backup/src/numsr_turtlebot
 
 //The directory containing a CMake configuration file for nuturtlebot_msgs.
 nuturtlebot_msgs_DIR:PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/share/nuturtlebot_msgs/cmake
@@ -602,7 +602,7 @@ CMAKE_GENERATOR_PLATFORM:INTERNAL=
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=/home/catherine-maglione/yolo_backup/numsr_turtlebot
+CMAKE_HOME_DIRECTORY:INTERNAL=/home/catherine-maglione/yolo_backup/src/numsr_turtlebot
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
 //ADVANCED property for variable: CMAKE_LINKER

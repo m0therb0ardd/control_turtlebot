@@ -325,7 +325,7 @@ nuturtlebot_msgs_BINARY_DIR:STATIC=/home/catherine-maglione/yolo_backup/build/nu
 nuturtlebot_msgs_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-nuturtlebot_msgs_SOURCE_DIR:STATIC=/home/catherine-maglione/yolo_backup/nuturtlebot_msgs
+nuturtlebot_msgs_SOURCE_DIR:STATIC=/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs
 
 //Dependencies for the target
 nuturtlebot_msgs__rosidl_generator_py_LIB_DEPENDS:STATIC=general;nuturtlebot_msgs__rosidl_generator_c;general;Python3::Python;general;nuturtlebot_msgs__rosidl_typesupport_c;general;builtin_interfaces::builtin_interfaces__rosidl_generator_c;general;builtin_interfaces::builtin_interfaces__rosidl_typesupport_fastrtps_c;general;builtin_interfaces::builtin_interfaces__rosidl_typesupport_introspection_c;general;builtin_interfaces::builtin_interfaces__rosidl_typesupport_c;general;builtin_interfaces::builtin_interfaces__rosidl_typesupport_fastrtps_cpp;general;builtin_interfaces::builtin_interfaces__rosidl_typesupport_introspection_cpp;general;builtin_interfaces::builtin_interfaces__rosidl_typesupport_cpp;general;builtin_interfaces::builtin_interfaces__rosidl_generator_py;general;builtin_interfaces::builtin_interfaces__rosidl_generator_py;
@@ -493,7 +493,7 @@ CMAKE_GENERATOR_PLATFORM:INTERNAL=
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=/home/catherine-maglione/yolo_backup/nuturtlebot_msgs
+CMAKE_HOME_DIRECTORY:INTERNAL=/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=1
 //ADVANCED property for variable: CMAKE_LINKER

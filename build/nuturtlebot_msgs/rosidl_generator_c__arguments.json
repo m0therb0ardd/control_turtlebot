@@ -7,8 +7,8 @@
     "/home/catherine-maglione/yolo_backup/build/nuturtlebot_msgs/rosidl_adapter/nuturtlebot_msgs:msg/WheelCommands.idl"
   ],
   "ros_interface_files": [
-    "/home/catherine-maglione/yolo_backup/nuturtlebot_msgs/msg/SensorData.msg",
-    "/home/catherine-maglione/yolo_backup/nuturtlebot_msgs/msg/WheelCommands.msg"
+    "/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/msg/SensorData.msg",
+    "/home/catherine-maglione/yolo_backup/src/nuturtlebot_msgs/msg/WheelCommands.msg"
   ],
   "ros_interface_dependencies": [
     "builtin_interfaces:/opt/ros/jazzy/share/builtin_interfaces/msg/Duration.idl",
