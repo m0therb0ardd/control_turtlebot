@@ -1,0 +1,5 @@
+  File "/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/apriltag_detector.py", line 292
+    ?###################
+    ^
+SyntaxError: invalid syntax
+

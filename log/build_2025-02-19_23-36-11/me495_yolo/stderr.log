@@ -1,0 +1,5 @@
+  File "/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint.py", line 895
+    return transformed_waypoints
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: 'return' outside function
+

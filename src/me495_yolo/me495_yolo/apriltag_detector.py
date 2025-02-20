@@ -289,79 +289,108 @@
 #     rclpy.spin(node)
 #     node.destroy_node()
 #     rclpy.shutdown()
+?###################
+# import rclpy
+# from rclpy.node import Node
+# from std_msgs.msg import Float32MultiArray
+# from apriltag_msgs.msg import AprilTagDetectionArray
+# import math
+
+# class AprilTagDetector(Node):
+#     def __init__(self):
+#         super().__init__('apriltag_detector')
+
+#         # Subscribe to AprilTag detections
+#         self.create_subscription(
+#             AprilTagDetectionArray, 
+#             '/detections',  # Updated to correct topic
+#             self.apriltag_callback, 
+#             10
+#         )
+
+#         # Publishers for TurtleBot and Dancer positions
+#         self.turtlebot_position_pub = self.create_publisher(Float32MultiArray, '/turtlebot_position_april', 10)
+#         self.turtlebot_orientation_pub = self.create_publisher(Float32MultiArray, '/turtlebot_orientation_april', 10)
+#         self.dancer_position_pub = self.create_publisher(Float32MultiArray, '/dancer_position_april', 10)
+
+
+
+#     def apriltag_callback(self, msg):
+#         """Processes AprilTag detections and publishes positions."""
+#         self.get_logger().info(f"📡 Received {len(msg.detections)} detections")  # Print count
+
+#         if not msg.detections:
+#             self.get_logger().warn("❌ No AprilTags detected!")
+#             return
+
+#         for detection in msg.detections:
+#             tag_id = detection.id  # Get the tag ID
+#             x, y = detection.centre.x / 1000, detection.centre.y / 1000  # Convert mm → meters
+
+#             self.get_logger().info(f"🔍 Detected AprilTag {tag_id}: X={x:.2f}, Y={y:.2f}")
+
+#             # Check if tag IDs match expected values
+#             if tag_id == 4:  # TurtleBot Center
+#                 pos_msg = Float32MultiArray(data=[x, y])
+#                 self.turtlebot_position_pub.publish(pos_msg)
+#                 self.get_logger().info(f"📡 Published TurtleBot Position: {x:.2f}, {y:.2f}")
+
+#             elif tag_id == 3:  # TurtleBot Front
+#                 orient_msg = Float32MultiArray(data=[x, y])
+#                 self.turtlebot_orientation_pub.publish(orient_msg)
+#                 self.get_logger().info(f"🧭 Published TurtleBot Orientation: {x:.2f}, {y:.2f}")
+
+#             elif tag_id == 0:  # Dancer
+#                 dancer_msg = Float32MultiArray(data=[x, y])
+#                 self.dancer_position_pub.publish(dancer_msg)
+#                 self.get_logger().info(f"💃 Published Dancer Position: {x:.2f}, {y:.2f}")
+
+
+# def main():
+#     rclpy.init()
+#     node = AprilTagDetector()
+#     rclpy.spin(node)
+#     node.destroy_node()
+#     rclpy.shutdown()
 
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32MultiArray
 from apriltag_msgs.msg import AprilTagDetectionArray
+from geometry_msgs.msg import TransformStamped
+import tf2_ros
 import math
+import message_filters 
 
 class AprilTagDetector(Node):
     def __init__(self):
         super().__init__('apriltag_detector')
-
-        # Subscribe to AprilTag detections
-        self.create_subscription(
-            AprilTagDetectionArray, 
-            '/detections',  # Updated to correct topic
-            self.apriltag_callback, 
-            10
-        )
 
         # Publishers for TurtleBot and Dancer positions
         self.turtlebot_position_pub = self.create_publisher(Float32MultiArray, '/turtlebot_position_april', 10)
         self.turtlebot_orientation_pub = self.create_publisher(Float32MultiArray, '/turtlebot_orientation_april', 10)
         self.dancer_position_pub = self.create_publisher(Float32MultiArray, '/dancer_position_april', 10)
 
-    # def apriltag_callback(self, msg):
-    #     """Processes AprilTag detections and publishes positions."""
-    #     if not msg.detections:
-    #         self.get_logger().info("❌ No AprilTags detected.")
-    #         return
+        self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
-    #     turtlebot_position = None
-    #     turtlebot_orientation = None
-    #     dancer_position = None
+        # ✅ Use message_filters to synchronize image and camera info topics
+        image_sub = message_filters.Subscriber(self, Image, "/camera/camera/color/image_raw")
+        info_sub = message_filters.Subscriber(self, CameraInfo, "/camera/camera/color/camera_info")
 
-    #     for detection in msg.detections:
-    #         tag_id = detection.id # Extract Tag ID
-    #         center_x = detection.centre.x  # Pixel X coordinate of tag center
-    #         center_y = detection.centre.y  # Pixel Y coordinate of tag center
+        # Approximate Time Synchronization (allows slight mismatch)
+        self.ts = message_filters.ApproximateTimeSynchronizer([image_sub, info_sub], queue_size=10, slop=0.1)
+        self.ts.registerCallback(self.synced_callback)
 
-    #         # Convert to meters (if needed, you may need camera calibration)
-    #         x, y = center_x / 1000, center_y / 1000  # Example conversion from pixels to meters
+        self.get_logger().info("🚀 AprilTag detector initialized with synchronized image & camera_info!")
 
-    #         # Assign detections to corresponding tracked objects
-    #         if tag_id == 11.4:  # TurtleBot Center
-    #             turtlebot_position = [x, y]
-    #             self.get_logger().info(f"🐢 TurtleBot Center: X={x:.2f}, Y={y:.2f}")
-            
-    #         elif tag_id == 11.3:  # TurtleBot Front (for orientation)
-    #             turtlebot_orientation = [x, y]
-    #             self.get_logger().info(f"🐢 TurtleBot Front: X={x:.2f}, Y={y:.2f}")
+    def synced_callback(self, image_msg, camera_info_msg):
+        """This function runs only when image & camera_info are received together."""
+        self.get_logger().info("📸 Image & Camera Info received together ✅")
+        # You can now safely process AprilTags since both image & intrinsics are synced.
 
-    #         elif tag_id == 11.0:  # Dancer
-    #             dancer_position = [x, y]
-    #             self.get_logger().info(f"💃 Dancer Position: X={x:.2f}, Y={y:.2f}")
-
-    #     # Publish TurtleBot's position and orientation
-    #     if turtlebot_position:
-    #         msg = Float32MultiArray()
-    #         msg.data = turtlebot_position
-    #         self.turtlebot_position_pub.publish(msg)
-
-    #     if turtlebot_orientation:
-    #         msg = Float32MultiArray()
-    #         msg.data = turtlebot_orientation
-    #         self.turtlebot_orientation_pub.publish(msg)
-
-    #     if dancer_position:
-    #         msg = Float32MultiArray()
-    #         msg.data = dancer_position
-    #         self.dancer_position_pub.publish(msg)
 
     def apriltag_callback(self, msg):
-        """Processes AprilTag detections and publishes positions."""
+        """Processes AprilTag detections and publishes positions + TF frames."""
         self.get_logger().info(f"📡 Received {len(msg.detections)} detections")  # Print count
 
         if not msg.detections:
@@ -374,22 +403,42 @@ class AprilTagDetector(Node):
 
             self.get_logger().info(f"🔍 Detected AprilTag {tag_id}: X={x:.2f}, Y={y:.2f}")
 
-            # Check if tag IDs match expected values
             if tag_id == 4:  # TurtleBot Center
-                pos_msg = Float32MultiArray(data=[x, y])
+                pos_msg = Float32MultiArray(data=[x, y, 0.0])  # Ensure Z=0
                 self.turtlebot_position_pub.publish(pos_msg)
-                self.get_logger().info(f"📡 Published TurtleBot Position: {x:.2f}, {y:.2f}")
+                self.broadcast_tf("turtlebot_position_april", x, y, 0.0)
+                self.get_logger().info(f"📡 Published TurtleBot Position & TF: {x:.2f}, {y:.2f}")
 
             elif tag_id == 3:  # TurtleBot Front
-                orient_msg = Float32MultiArray(data=[x, y])
+                orient_msg = Float32MultiArray(data=[x, y, 0.0])  # Ensure Z=0
                 self.turtlebot_orientation_pub.publish(orient_msg)
-                self.get_logger().info(f"🧭 Published TurtleBot Orientation: {x:.2f}, {y:.2f}")
+                self.broadcast_tf("turtlebot_front_april", x, y, 0.0)
+                self.get_logger().info(f"🧭 Published TurtleBot Orientation & TF: {x:.2f}, {y:.2f}")
 
             elif tag_id == 0:  # Dancer
-                dancer_msg = Float32MultiArray(data=[x, y])
+                dancer_msg = Float32MultiArray(data=[x, y, 0.0])  # Ensure Z=0
                 self.dancer_position_pub.publish(dancer_msg)
-                self.get_logger().info(f"💃 Published Dancer Position: {x:.2f}, {y:.2f}")
+                self.broadcast_tf("dancer_position_april", x, y, 0.0)
+                self.get_logger().info(f"💃 Published Dancer Position & TF: {x:.2f}, {y:.2f}")
 
+    def broadcast_tf(self, frame_id, x, y, z):
+        """Broadcasts TF transform from camera to detected AprilTag."""
+        t = TransformStamped()
+        t.header.stamp = self.get_clock().now().to_msg()
+        t.header.frame_id = "camera_color_optical_frame"  # Assuming camera frame
+        t.child_frame_id = frame_id  # Assign unique frame name
+
+        t.transform.translation.x = float(x)
+        t.transform.translation.y = float(y)
+        t.transform.translation.z = float(z)
+
+        # Set rotation to identity quaternion (no rotation assumed)
+        t.transform.rotation.x = 0.0
+        t.transform.rotation.y = 0.0
+        t.transform.rotation.z = 0.0
+        t.transform.rotation.w = 1.0
+
+        self.tf_broadcaster.sendTransform(t)
 
 def main():
     rclpy.init()
