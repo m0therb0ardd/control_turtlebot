@@ -167,9 +167,406 @@
 #     node.destroy_node()
 #     rclpy.shutdown()
 
+
+# ############################################################
+# import rclpy
+# from rclpy.node import Node
+# from geometry_msgs.msg import Twist
+# from std_msgs.msg import Float32MultiArray
+# from nav_msgs.msg import Path
+# import math
+
+# class TurtleBotWaypointFollower(Node):
+#     def __init__(self):
+#         super().__init__('waypoint_follower')
+
+#         # Subscribe to waypoints, position, and orientation
+#         self.create_subscription(Path, '/waypoints', self.waypoints_callback, 10)
+#         self.create_subscription(Float32MultiArray, '/turtlebot_position', self.position_callback, 10)
+#         self.create_subscription(Float32MultiArray, '/turtlebot_orientation', self.orientation_callback, 10)
+
+#         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+
+#         self.current_waypoints = []
+#         self.current_index = 0
+#         self.robot_position = (0.0, 0.0)
+#         self.yaw = None
+
+#         self.timer = self.create_timer(0.1, self.navigate_to_waypoint)  # Run at 10Hz
+
+#         self.reached_orientation = False  # Track if the robot has turned to face the waypoint
+
+
+#     def waypoints_callback(self, msg):
+#         """Receive waypoints and store them."""
+#         self.current_waypoints = [(pose.pose.position.x, pose.pose.position.y) for pose in msg.poses]
+#         self.current_index = 0  # Reset to the first waypoint
+#         self.get_logger().info(f"✅ Received {len(self.current_waypoints)} waypoints.")
+
+#     def position_callback(self, msg):
+#         """Update the TurtleBot's position."""
+#         if len(msg.data) >= 2:
+#             self.robot_position = (msg.data[0], msg.data[1])
+
+#     def orientation_callback(self, msg):
+#         """Update the TurtleBot's yaw angle."""
+#         if len(msg.data) >= 1:
+#             self.yaw = msg.data[0]
+
+#     # def navigate_to_waypoint(self):
+#     #     """Move the TurtleBot to the next waypoint."""
+#     #     if not self.current_waypoints or self.current_index >= len(self.current_waypoints):
+#     #         self.stop_robot()
+#     #         return
+
+#     #     if self.robot_position is None or self.yaw is None:
+#     #         self.get_logger().warn("⚠️ Waiting for position and orientation data...")
+#     #         return
+
+#     #     # Get current waypoint
+#     #     goal_x, goal_y = self.current_waypoints[self.current_index]
+#     #     robot_x, robot_y = self.robot_position
+
+#     #     # Compute angle and distance to waypoint
+#     #     dx = goal_x - robot_x
+#     #     dy = goal_y - robot_y
+#     #     distance = math.sqrt(dx**2 + dy**2)
+#     #     target_angle = math.degrees(math.atan2(dy, dx))  # Convert to degrees
+
+#     #     # Compute target angle in 360-degree coordinates
+#     #     target_angle = math.degrees(math.atan2(dy, dx))
+#     #     if target_angle < 0:
+#     #         target_angle += 360  # Normalize to [0, 360]
+
+#     #     self.get_logger().info(f"📍 Target Waypoint: {goal_x:.2f}, {goal_y:.2f}")
+#     #     self.get_logger().info(f"📡 Current Position: {robot_x:.2f}, {robot_y:.2f}")
+#     #     self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
+
+
+#     #     # Ensure yaw is within [0, 360]
+#     #     if self.yaw < 0:
+#     #         self.yaw += 360
+
+#     #     angle_diff = abs(target_angle - self.yaw)  # No wrapping, just direct subtraction
+
+#     #     self.get_logger().info(f"📍 Target Waypoint: {goal_x:.2f}, {goal_y:.2f}")
+#     #     self.get_logger().info(f"📡 Current Position: {robot_x:.2f}, {robot_y:.2f}")
+#     #     self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
+#     #     self.get_logger().info(f"🔄 Angle Difference: {angle_diff:.2f}°")
+
+#     #     twist = Twist()
+
+#     #     if abs(angle_diff) > 5:  # If not facing waypoint, rotate counterclockwise
+#     #         twist.angular.z = 0.3  # Always turn CCW, no shortest path calculation
+#     #         twist.linear.x = 0.0
+#     #         self.get_logger().info(f"🔄 Rotating CCW: {angle_diff:.2f}° off target")
+#     #     else:  # If within threshold, move forward
+#     #         twist.angular.z = 0.0
+#     #         twist.linear.x = min(0.2, -(distance))  # Move but limit speed #ADDED NEGATIVE TO SEE IF IT MOVES TOWARDS WAYPOINT ISNTEAD OF AWAY
+#     #         self.get_logger().info(f"🚀 Moving Forward: {distance:.3f} meters to waypoint")
+
+#     #     if distance < 0.1:  # Reached waypoint
+#     #         self.get_logger().info(f"✅ Reached waypoint {self.current_index + 1}/{len(self.current_waypoints)}")
+#     #         self.current_index += 1
+
+#     #     self.cmd_vel_pub.publish(twist)
+
+#     # def navigate_to_waypoint(self):
+#     #     """Move the TurtleBot to the next waypoint."""
+#     #     if not self.current_waypoints or self.current_index >= len(self.current_waypoints):
+#     #         self.stop_robot()
+#     #         return
+
+#     #     if self.robot_position is None or self.yaw is None:
+#     #         self.get_logger().warn("⚠️ Waiting for position and orientation data...")
+#     #         return
+
+#     #     # Get current waypoint
+#     #     goal_x, goal_y = self.current_waypoints[self.current_index]
+#     #     robot_x, robot_y = self.robot_position
+
+#     #     # Compute angle and distance to waypoint (in world frame)
+#     #     dx = goal_x - robot_x
+#     #     dy = goal_y - robot_y
+#     #     distance = math.sqrt(dx**2 + dy**2)
+#     #     target_angle = math.degrees(math.atan2(dy, dx))
+
+#     #     # Normalize target angle to [0, 360]
+#     #     if target_angle < 0:
+#     #         target_angle += 360
+
+#     #     # Normalize yaw to [0, 360]
+#     #     if self.yaw < 0:
+#     #         self.yaw += 360
+
+#     #     angle_diff = abs(target_angle - self.yaw) ##SIGN OF ANGLE DIF DOESNT MATTER BC MOVIGN CCW ANYWAY
+
+#     #     # Convert waypoint to TurtleBot frame
+#     #     yaw_rad = math.radians(self.yaw)
+#     #     tb_x = dx * math.cos(-yaw_rad) - dy * math.sin(-yaw_rad)
+#     #     tb_y = dx * math.sin(-yaw_rad) + dy * math.cos(-yaw_rad)
+
+#     #     # Log EVERYTHING
+#     #     self.get_logger().info(f"📍 Target Waypoint (World): X={goal_x:.2f}, Y={goal_y:.2f}")
+#     #     self.get_logger().info(f"📡 TurtleBot Position (World): X={robot_x:.2f}, Y={robot_y:.2f}")
+#     #     self.get_logger().info(f"📍✅  Waypoint in TurtleBot Frame: X={tb_x:.2f}, Y={tb_y:.2f}")
+#     #     self.get_logger().info(f"📡✅  TurtleBot Position in Its Own Frame: should be 0 0 ")
+#     #     self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
+#     #     self.get_logger().info(f"🔄 Angle Difference: {angle_diff:.2f}°")
+
+#     #     # Decision logic
+#     #     twist = Twist()
+
+#     #     if abs(angle_diff) > 10:  # Rotate until facing waypoint
+#     #         twist.angular.z = 0.3  # Always turn CCW
+#     #         twist.linear.x = 0.0
+           
+#     #     else:
+#     #         twist.angular.z = 0.0
+#     #         twist.linear.x = min(0.2, -(distance))  # Move forward but limit speed  #ADDED NEGATIVE TO SEE IF IT MOVES TOWARDS WAYPOINT ISNTEAD OF AWAY
+#     #         self.get_logger().info(f"🚀 Moving Forward: {distance:.3f} meters to waypoint")
+
+#     #     if distance < 0.1:  # Reached waypoint
+#     #         self.get_logger().info(f"✅ Reached waypoint {self.current_index + 1}/{len(self.current_waypoints)}")
+#     #         self.current_index += 1
+
+#     #     self.cmd_vel_pub.publish(twist)
+
+#     def navigate_to_waypoint(self):
+#         """Move the TurtleBot to the next waypoint by first rotating, then moving."""
+#         if not self.current_waypoints or self.current_index >= len(self.current_waypoints):
+#             self.stop_robot()
+#             return
+
+#         if self.robot_position is None or self.yaw is None:
+#             self.get_logger().warn("⚠️ Waiting for position and orientation data...")
+#             return
+
+#         # Get current waypoint
+#         goal_x, goal_y = self.current_waypoints[self.current_index]
+#         robot_x, robot_y = self.robot_position
+
+#         # Compute angle and distance to waypoint
+#         dx = goal_x - robot_x
+#         dy = goal_y - robot_y
+#         distance = math.sqrt(dx**2 + dy**2)
+#         target_angle = math.degrees(math.atan2(dy, dx))
+
+#         # Normalize angles to [0, 360]
+#         if target_angle < 0:
+#             target_angle += 360
+#         if self.yaw < 0:
+#             self.yaw += 360
+
+#         angle_diff = target_angle - self.yaw
+#         if angle_diff > 180:
+#             angle_diff -= 360  # Shortest rotation direction
+#         elif angle_diff < -180:
+#             angle_diff += 360
+
+#         # Log debugging info
+#         self.get_logger().info(f"📍 Target Waypoint: X={goal_x:.2f}, Y={goal_y:.2f}")
+#         self.get_logger().info(f"📡 TurtleBot Position: X={robot_x:.2f}, Y={robot_y:.2f}")
+#         self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
+#         self.get_logger().info(f"🔄 Angle Difference: {angle_diff:.2f}°")
+
+#         twist = Twist()
+
+#         if not self.reached_orientation:
+#             # Rotate first
+#             if abs(angle_diff) > 5:  # Threshold to stop rotating
+#                 twist.angular.z = 0.3 if angle_diff > 0 else -0.3  # Rotate in the shortest direction
+#                 twist.linear.x = 0.0
+#                 self.get_logger().info(f"🔄 Rotating towards waypoint: {angle_diff:.2f}° remaining")
+#             else:
+#                 self.reached_orientation = True  # Mark that we've completed the turn
+#                 self.get_logger().info("✅ Facing the waypoint. Now moving forward.")
+
+#         else:
+#             # Move forward once orientation is correct
+#             twist.angular.z = 0.0
+#             twist.linear.x = min(0.2, distance)  # Move forward, limit speed
+#             self.get_logger().info(f"🚀 Moving Forward: {distance:.3f} meters to waypoint")
+
+#             if distance < 0.1:  # Reached waypoint
+#                 self.get_logger().info(f"✅ Reached waypoint {self.current_index + 1}/{len(self.current_waypoints)}")
+#                 self.current_index += 1
+#                 self.reached_orientation = False  # Reset orientation state for the next waypoint
+
+#         self.cmd_vel_pub.publish(twist)
+
+
+#     def stop_robot(self):
+#         """Stop the robot when waypoints are complete."""
+#         twist = Twist()
+#         self.cmd_vel_pub.publish(twist)
+#         self.get_logger().info("🏁 All waypoints reached! Stopping.")
+
+# def main():
+#     rclpy.init()
+#     node = TurtleBotWaypointFollower()
+#     rclpy.spin(node)
+#     node.destroy_node()
+# #     rclpy.shutdown()
+
+
+# #trying ot just send a single anlge command and then a movement command import rclpy
+# from rclpy.node import Node
+# from geometry_msgs.msg import Twist
+# from std_msgs.msg import Float32MultiArray
+# from nav_msgs.msg import Path
+# import math
+# import time
+# import rclpy 
+# import time 
+
+# class TurtleBotWaypointFollower(Node):
+#     def __init__(self):
+#         super().__init__('waypoint_follower')
+
+#         # Subscribe to waypoints, position, and orientation
+#         self.create_subscription(Path, '/waypoints', self.waypoints_callback, 10)
+#         self.create_subscription(Float32MultiArray, '/turtlebot_position', self.position_callback, 10)
+#         self.create_subscription(Float32MultiArray, '/turtlebot_orientation', self.orientation_callback, 10)
+
+#         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+
+#         # State tracking
+#         self.current_waypoints = []
+#         self.robot_position = None
+#         self.yaw = None
+
+#     def waypoints_callback(self, msg):
+#         """Receives waypoints and stores them."""
+#         self.current_waypoints = [(pose.pose.position.x, pose.pose.position.y) for pose in msg.poses]
+#         self.get_logger().info(f"✅ Received {len(self.current_waypoints)} waypoints.")
+
+#         if self.current_waypoints:
+#             self.start_navigation()  # Begin movement when waypoints arrive
+
+#     def position_callback(self, msg):
+#         """Receives TurtleBot position (updates continuously for logging)."""
+#         if len(msg.data) >= 2:
+#             self.robot_position = (msg.data[0], msg.data[1])
+#             self.get_logger().info(f"📡 Current TurtleBot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
+
+#     def orientation_callback(self, msg):
+#         """Receives TurtleBot orientation (updates continuously for logging)."""
+#         if len(msg.data) >= 1:
+#             self.yaw = msg.data[0] 
+#             self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}°")
+
+#     def start_navigation(self):
+#         """Start moving to the first waypoint using fixed rotation & movement."""
+#         if not self.current_waypoints:
+#             self.get_logger().warn("⚠️ No waypoints received yet!")
+#             return
+
+#         # **Wait until position and yaw are received**
+#         if self.robot_position is None or self.yaw is None:
+#             self.get_logger().warn("⚠️ Waiting for position & orientation before starting movement...")
+#             return  # Exit and wait for the next callback
+        
+#         # Get the first waypoint
+#         goal_x, goal_y = self.current_waypoints[0]
+
+#         # Get the TurtleBot's current position & yaw ONCE
+#         robot_x, robot_y = self.robot_position
+#         current_yaw = self.yaw
+
+#         # Compute the target angle
+#         dx = goal_x - robot_x
+#         dy = goal_y - robot_y
+#         target_angle = math.degrees(math.atan2(dy, dx))
+
+#         # Normalize angles to [0, 360]
+#         if target_angle < 0:
+#             target_angle += 360
+#         if current_yaw < 0:
+#             current_yaw += 360
+
+#         # Compute shortest rotation direction
+#         angle_diff = target_angle - current_yaw
+#         if angle_diff > 180:
+#             angle_diff -= 360
+#         elif angle_diff < -180:
+#             angle_diff += 360
+
+#         # Compute the exact movement distance
+#         distance = math.sqrt(dx**2 + dy**2)
+
+#         self.get_logger().info(f"📍 Target Waypoint: X={goal_x:.2f}, Y={goal_y:.2f}")
+#         self.get_logger().info(f"📡 Initial TurtleBot Position: X={robot_x:.2f}, Y={robot_y:.2f}")
+#         self.get_logger().info(f"🧭 Current Yaw: {current_yaw:.2f}° | Target Angle: {target_angle:.2f}°")
+#         self.get_logger().info(f"🔄 Angle Difference: {angle_diff:.2f}°")
+#         self.get_logger().info(f"📏 Distance to Move: {distance:.2f} meters")
+
+#         # **Step 1: Rotate to face the waypoint (SLOWLY)**
+#         self.rotate_fixed(angle_diff)
+
+#         # **Step 2: Move forward the exact calculated distance (SLOWLY)**
+#         self.move_forward_fixed(distance)
+
+#         # **Step 3: Stop once the movement is complete**
+#         self.stop_robot()
+
+#     def rotate_fixed(self, angle_diff):
+#         """Rotates TurtleBot by the given angle difference, gradually."""
+#         twist = Twist()
+#         rotation_speed = 0.1  # Slower rotation speed
+#         duration = abs(angle_diff) / 30.0  # Adjust time based on rotation speed
+
+#         twist.angular.z = rotation_speed if angle_diff > 0 else -rotation_speed
+#         self.cmd_vel_pub.publish(twist)
+
+#         self.get_logger().info(f"⏳ Rotating {angle_diff:.2f}° over {duration:.2f} seconds...")
+        
+#         start_time = time.time()
+#         while time.time() - start_time < duration:
+#             self.get_logger().info(f"🔄 Still Rotating... Yaw: {self.yaw:.2f}° (Target: {angle_diff:.2f}°)")
+#             time.sleep(0.5)  # Log every 0.5 seconds
+
+#         # Stop rotation
+#         self.cmd_vel_pub.publish(Twist())
+#         self.get_logger().info(f"✅ Finished rotating {angle_diff:.2f}°.")
+
+#     def move_forward_fixed(self, distance):
+#         """Moves the TurtleBot forward by a fixed distance, gradually."""
+#         twist = Twist()
+#         move_speed = 0.1  # Slower movement speed
+#         duration = distance / move_speed  # Adjust time based on speed
+
+#         twist.linear.x = move_speed
+#         self.cmd_vel_pub.publish(twist)
+
+#         self.get_logger().info(f"🚀 Moving forward {distance:.2f}m over {duration:.2f} seconds...")
+        
+#         start_time = time.time()
+#         while time.time() - start_time < duration:
+#             self.get_logger().info(f"📡 Current Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f} | Distance Left: {distance:.3f}")
+#             time.sleep(0.5)  # Log every 0.5 seconds
+
+#         # Stop movement
+#         self.cmd_vel_pub.publish(Twist())
+#         self.get_logger().info(f"🏁 Reached waypoint.")
+
+#     def stop_robot(self):
+#         """Stops the TurtleBot when waypoint is reached."""
+#         twist = Twist()
+#         self.cmd_vel_pub.publish(twist)
+#         self.get_logger().info("🏁 Waypoint reached! Stopping.")
+
+# def main():
+#     rclpy.init()
+#     node = TurtleBotWaypointFollower()
+#     rclpy.spin(node)
+#     node.destroy_node()
+#     rclpy.shutdown()
+
+#$#### testing basics 
+
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
 from nav_msgs.msg import Path
 import math
@@ -183,155 +580,77 @@ class TurtleBotWaypointFollower(Node):
         self.create_subscription(Float32MultiArray, '/turtlebot_position', self.position_callback, 10)
         self.create_subscription(Float32MultiArray, '/turtlebot_orientation', self.orientation_callback, 10)
 
-        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
-
+        # State tracking
         self.current_waypoints = []
-        self.current_index = 0
-        self.robot_position = (0.0, 0.0)
+        self.robot_position = None
         self.yaw = None
 
-        self.timer = self.create_timer(0.1, self.navigate_to_waypoint)  # Run at 10Hz
-
     def waypoints_callback(self, msg):
-        """Receive waypoints and store them."""
+        """Receives waypoints and stores them."""
         self.current_waypoints = [(pose.pose.position.x, pose.pose.position.y) for pose in msg.poses]
-        self.current_index = 0  # Reset to the first waypoint
         self.get_logger().info(f"✅ Received {len(self.current_waypoints)} waypoints.")
 
+        if self.current_waypoints:
+            self.test_navigation()  # Begin logging when waypoints arrive
+
     def position_callback(self, msg):
-        """Update the TurtleBot's position."""
+        """Receives TurtleBot position."""
         if len(msg.data) >= 2:
             self.robot_position = (msg.data[0], msg.data[1])
+            self.get_logger().info(f"📡 Current TurtleBot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
 
     def orientation_callback(self, msg):
-        """Update the TurtleBot's yaw angle."""
+        """Receives TurtleBot orientation."""
         if len(msg.data) >= 1:
-            self.yaw = msg.data[0]
+            self.yaw = msg.data[0] 
+            self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}°")
 
-    # def navigate_to_waypoint(self):
-    #     """Move the TurtleBot to the next waypoint."""
-    #     if not self.current_waypoints or self.current_index >= len(self.current_waypoints):
-    #         self.stop_robot()
-    #         return
-
-    #     if self.robot_position is None or self.yaw is None:
-    #         self.get_logger().warn("⚠️ Waiting for position and orientation data...")
-    #         return
-
-    #     # Get current waypoint
-    #     goal_x, goal_y = self.current_waypoints[self.current_index]
-    #     robot_x, robot_y = self.robot_position
-
-    #     # Compute angle and distance to waypoint
-    #     dx = goal_x - robot_x
-    #     dy = goal_y - robot_y
-    #     distance = math.sqrt(dx**2 + dy**2)
-    #     target_angle = math.degrees(math.atan2(dy, dx))  # Convert to degrees
-
-    #     # Compute target angle in 360-degree coordinates
-    #     target_angle = math.degrees(math.atan2(dy, dx))
-    #     if target_angle < 0:
-    #         target_angle += 360  # Normalize to [0, 360]
-
-    #     self.get_logger().info(f"📍 Target Waypoint: {goal_x:.2f}, {goal_y:.2f}")
-    #     self.get_logger().info(f"📡 Current Position: {robot_x:.2f}, {robot_y:.2f}")
-    #     self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
-
-
-    #     # Ensure yaw is within [0, 360]
-    #     if self.yaw < 0:
-    #         self.yaw += 360
-
-    #     angle_diff = abs(target_angle - self.yaw)  # No wrapping, just direct subtraction
-
-    #     self.get_logger().info(f"📍 Target Waypoint: {goal_x:.2f}, {goal_y:.2f}")
-    #     self.get_logger().info(f"📡 Current Position: {robot_x:.2f}, {robot_y:.2f}")
-    #     self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
-    #     self.get_logger().info(f"🔄 Angle Difference: {angle_diff:.2f}°")
-
-    #     twist = Twist()
-
-    #     if abs(angle_diff) > 5:  # If not facing waypoint, rotate counterclockwise
-    #         twist.angular.z = 0.3  # Always turn CCW, no shortest path calculation
-    #         twist.linear.x = 0.0
-    #         self.get_logger().info(f"🔄 Rotating CCW: {angle_diff:.2f}° off target")
-    #     else:  # If within threshold, move forward
-    #         twist.angular.z = 0.0
-    #         twist.linear.x = min(0.2, -(distance))  # Move but limit speed #ADDED NEGATIVE TO SEE IF IT MOVES TOWARDS WAYPOINT ISNTEAD OF AWAY
-    #         self.get_logger().info(f"🚀 Moving Forward: {distance:.3f} meters to waypoint")
-
-    #     if distance < 0.1:  # Reached waypoint
-    #         self.get_logger().info(f"✅ Reached waypoint {self.current_index + 1}/{len(self.current_waypoints)}")
-    #         self.current_index += 1
-
-    #     self.cmd_vel_pub.publish(twist)
-
-    def navigate_to_waypoint(self):
-        """Move the TurtleBot to the next waypoint."""
-        if not self.current_waypoints or self.current_index >= len(self.current_waypoints):
-            self.stop_robot()
+    def test_navigation(self):
+        """Logs all movement calculations but DOES NOT move the TurtleBot."""
+        if not self.current_waypoints:
+            self.get_logger().warn("⚠️ No waypoints received yet!")
             return
 
         if self.robot_position is None or self.yaw is None:
-            self.get_logger().warn("⚠️ Waiting for position and orientation data...")
-            return
+            self.get_logger().warn("⚠️ Waiting for position & orientation before testing...")
+            return  # Exit and wait for the next callback
+        
+        # Get the first waypoint
+        goal_x, goal_y = self.current_waypoints[0]
 
-        # Get current waypoint
-        goal_x, goal_y = self.current_waypoints[self.current_index]
+        # Get the TurtleBot's current position & yaw
         robot_x, robot_y = self.robot_position
+        current_yaw = self.yaw
 
-        # Compute angle and distance to waypoint (in world frame)
+        # Compute the target angle
         dx = goal_x - robot_x
         dy = goal_y - robot_y
-        distance = math.sqrt(dx**2 + dy**2)
         target_angle = math.degrees(math.atan2(dy, dx))
 
-        # Normalize target angle to [0, 360]
+        # Normalize angles to [0, 360]
         if target_angle < 0:
             target_angle += 360
+        if current_yaw < 0:
+            current_yaw += 360
 
-        # Normalize yaw to [0, 360]
-        if self.yaw < 0:
-            self.yaw += 360
+        # Compute shortest rotation direction
+        angle_diff = -( target_angle - current_yaw ) ## orientaion thing 
+        if angle_diff > 180:
+            angle_diff -= 360
+        elif angle_diff < -180:
+            angle_diff += 360
 
-        angle_diff = abs(target_angle - self.yaw) ##SIGN OF ANGLE DIF DOESNT MATTER BC MOVIGN CCW ANYWAY
+        # Compute movement distance
+        distance = math.sqrt(dx**2 + dy**2)
 
-        # Convert waypoint to TurtleBot frame
-        yaw_rad = math.radians(self.yaw)
-        tb_x = dx * math.cos(-yaw_rad) - dy * math.sin(-yaw_rad)
-        tb_y = dx * math.sin(-yaw_rad) + dy * math.cos(-yaw_rad)
-
-        # Log EVERYTHING
-        self.get_logger().info(f"📍 Target Waypoint (World): X={goal_x:.2f}, Y={goal_y:.2f}")
-        self.get_logger().info(f"📡 TurtleBot Position (World): X={robot_x:.2f}, Y={robot_y:.2f}")
-        self.get_logger().info(f"📍✅  Waypoint in TurtleBot Frame: X={tb_x:.2f}, Y={tb_y:.2f}")
-        self.get_logger().info(f"📡✅  TurtleBot Position in Its Own Frame: should be 0 0 ")
-        self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle: {target_angle:.2f}°")
+        # 🚨 **LOG EVERYTHING**
+        self.get_logger().info(f"📍 Target Waypoint: X={goal_x:.2f}, Y={goal_y:.2f}")
+        self.get_logger().info(f"📡 TurtleBot Initial Position: X={robot_x:.2f}, Y={robot_y:.2f}")
+        self.get_logger().info(f"🧭 Current Yaw: {current_yaw:.2f}° | Target Angle: {target_angle:.2f}°")
         self.get_logger().info(f"🔄 Angle Difference: {angle_diff:.2f}°")
+        self.get_logger().info(f"📏 Distance to Move: {distance:.2f} meters")
 
-        # Decision logic
-        twist = Twist()
-
-        if abs(angle_diff) > 5:  # Rotate until facing waypoint
-            twist.angular.z = 0.3  # Always turn CCW
-            twist.linear.x = 0.0
-           
-        else:
-            twist.angular.z = 0.0
-            twist.linear.x = min(0.2, -(distance))  # Move forward but limit speed  #ADDED NEGATIVE TO SEE IF IT MOVES TOWARDS WAYPOINT ISNTEAD OF AWAY
-            self.get_logger().info(f"🚀 Moving Forward: {distance:.3f} meters to waypoint")
-
-        if distance < 0.1:  # Reached waypoint
-            self.get_logger().info(f"✅ Reached waypoint {self.current_index + 1}/{len(self.current_waypoints)}")
-            self.current_index += 1
-
-        self.cmd_vel_pub.publish(twist)
-
-    def stop_robot(self):
-        """Stop the robot when waypoints are complete."""
-        twist = Twist()
-        self.cmd_vel_pub.publish(twist)
-        self.get_logger().info("🏁 All waypoints reached! Stopping.")
+        self.get_logger().info(f"✅ Done logging! Check these values before enabling movement.")
 
 def main():
     rclpy.init()

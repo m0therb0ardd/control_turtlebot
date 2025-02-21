@@ -1,0 +1,5 @@
+  File "/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_follower.py", line 413
+    trying ot just send a single anlge command and then a movement command 
+           ^^
+SyntaxError: invalid syntax
+
