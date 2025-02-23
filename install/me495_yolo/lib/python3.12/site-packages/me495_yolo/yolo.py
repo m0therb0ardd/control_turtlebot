@@ -19,7 +19,9 @@ class YoloNode(Node):
         self.bridge = CvBridge()
 
         # Subscribe to RGB image, depth image, and camera info
-        self.create_subscription(Image, 'image', self.yolo_callback, 10)
+        #self.create_subscription(Image, 'image', self.yolo_callback, 10) // THIS USED TO WORK 
+        self.create_subscription(Image, '/camera/camera/color/image_raw', self.yolo_callback, 10) # THIS WORKS NOW !!! DONT REMOVE 
+
         self.create_subscription(Image, '/camera/camera/depth/image_rect_raw', self.depth_callback, 10)
         self.create_subscription(CameraInfo, '/camera/camera/color/camera_info', self.camera_info_callback, 10)
         self.create_subscription(MarkerArray, 'waypoint_markers', self.marker_callback, 10)
@@ -32,7 +34,7 @@ class YoloNode(Node):
         # Timer variables
         self.start_time = None  # Store start time of movement
         self.time_limit = 8 # Stop recording waypoints after 5 seconds
-        self.tf_timer = self.create_timer(0.1, self.broadcast_all_tf)  # Broadcast every 100ms
+        self.tf_timer = self.create_timer(0.5, self.broadcast_all_tf)  # Broadcast every 500ms
 
 
         self.last_valid_dancer_pose = None  # Store last valid dancer position
@@ -106,6 +108,8 @@ class YoloNode(Node):
         - Computes TurtleBot yaw from blue (base) and yellow (front).
         - Publishes TF transforms and orientation.
         """
+        self.get_logger().warn("IN YOLO CALLBACK!")
+      
         if self.depth_image is None or self.fx is None:
             self.get_logger().warn("Waiting for depth image and camera intrinsics!")
             return
@@ -172,11 +176,7 @@ class YoloNode(Node):
                 yaw = math.atan2(dy, dx)  # Compute yaw angle in radians
                 yaw_degrees = math.degrees(yaw)
                 yaw_degrees = (math.degrees(yaw) + 360) % 360  # Convert to 0-360 range
-            
-
-
-
-
+           
                 # ✅ Publish TurtleBot orientation
                 orientation_msg = Float32MultiArray()
                 orientation_msg.data = [yaw_degrees]

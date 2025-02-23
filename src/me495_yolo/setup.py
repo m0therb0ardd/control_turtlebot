@@ -31,7 +31,7 @@ setup(
             'waypoint = me495_yolo.waypoint:main',
             'waypoint_follower = me495_yolo.waypoint_follower:main',
             'square_motion = me495_yolo.square_motion:main',
-            'rotate_to_90= me495_yolo.rotate_to_90:main',
+            'square_mover= me495_yolo.square_mover:main',
             'apriltag_detector = me495_yolo.apriltag_detector:main',
 
             
