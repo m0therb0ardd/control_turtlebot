@@ -182,6 +182,10 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32MultiArray
 import math
 import time
+import tf2_ros
+import tf_transformations
+from geometry_msgs.msg import TransformStamped
+import numpy as np
 
 class SquareMover(Node):
     def __init__(self):
@@ -197,32 +201,41 @@ class SquareMover(Node):
         self.current_index = 0
         self.ready = False
 
+        # for waypoint tranformation 
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+
+
     def position_callback(self, msg):
         """Receives initial position & sets waypoints."""
         if self.robot_position is None:
             self.robot_position = (msg.data[0], msg.data[1])
             self.get_logger().info(f"📡 Initial Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
 
-            # Define waypoints in a 5-inch square (~0.127m per side)
+            # ✅ Define waypoints properly
             x, y = self.robot_position
-            self.square_waypoints = [
-                (x + 0.127, y),  # rightttt
-                (x + 0.127, y + 0.127),  # upppp
-                (x, y + 0.127),  # leftttt 
-                (x, y)  # downnn (back to start)
+            waypoints_world = [
+                (x + 0.127, y, 0.0),  # right
+                (x + 0.127, y + 0.127, 0.0),  # up
+                (x, y + 0.127, 0.0),  # left
+                (x, y, 0.0)  # down (back to start)
             ]
 
-            self.get_logger().info(f"📍 Set Square Waypoints: {self.square_waypoints}")
+            self.get_logger().info(f"📍 Original Waypoints (World Frame): {waypoints_world}")
 
-    # def orientation_callback(self, msg):
-    #     """Receives initial orientation."""
-    #     if self.yaw is None:
-    #         self.yaw = msg.data[0]
-    #         self.get_logger().info(f"🧭 Initial Yaw: {self.yaw:.2f}°")
+            # ✅ Transform waypoints and store them
+            self.square_waypoints = self.transform_waypoints_to_turtlebot(waypoints_world)
 
-    #         if self.robot_position:
-    #             self.ready = True  # Start when both position & yaw are received
-    #             self.move_to_next_waypoint()
+            if self.square_waypoints:  # Ensure waypoints were successfully transformed
+                self.get_logger().info(f"📍 Transformed Waypoints (TurtleBot Frame): {self.square_waypoints}")
+            else:
+                self.get_logger().error("🚨 Waypoints transformation failed! No transformed waypoints available.")
+
+            # ✅ Check if both position and orientation are available
+            if self.yaw is not None and self.square_waypoints:
+                self.ready = True
+                self.move_to_next_waypoint()
+
 
     def orientation_callback(self, msg):
         """Receives yaw directly from YOLO node."""
@@ -230,56 +243,152 @@ class SquareMover(Node):
             self.yaw = msg.data[0]  # Store received yaw
             self.get_logger().info(f"🧭 Received TurtleBot Yaw from YOLO: {self.yaw:.2f}°")
 
-            if self.robot_position:  # If we also have position, start moving!
+            # ✅ Check if both position and waypoints are available
+            if self.robot_position is not None and self.square_waypoints:
                 self.ready = True
                 self.move_to_next_waypoint()
 
 
+    
+    def transform_waypoints_to_turtlebot(self, waypoints):
+        """Transforms waypoints from the camera frame to the TurtleBot’s local frame using TF lookups."""
+        transformed_waypoints = []
+
+        for x, y, z in waypoints:
+            try:
+                # Ensure TF buffer is initialized
+                # if not hasattr(self, "tf_buffer") or self.tf_buffer is None:
+                #     self.get_logger().error("❌ TF buffer not initialized!")
+                #     return []
+
+                # Wait for transform to become available
+                timeout_sec = 3.0  # Max wait time
+                start_time = self.get_clock().now().seconds_nanoseconds()[0]
+
+                while not self.tf_buffer.can_transform("turtlebot_blue_object", "camera_color_optical_frame", rclpy.time.Time()):
+                    if self.get_clock().now().seconds_nanoseconds()[0] - start_time > timeout_sec:
+                        self.get_logger().error("🚨 Transform still NOT available after waiting!")
+                        return []
+                    self.get_logger().warn("⏳ Waiting for transform from camera → turtlebot_blue_object...")
+                    time.sleep(0.5)  # Small delay before retrying
+
+
+                # Check if the transform is available BEFORE looking it up
+                if not self.tf_buffer.can_transform("turtlebot_blue_object", "camera_color_optical_frame", rclpy.time.Time()):
+                    self.get_logger().error("🚨 Transform from camera → turtlebot_blue_object is NOT available!")
+                    return []
+
+                # Lookup the transform from the camera frame to the TurtleBot frame
+                transform = self.tf_buffer.lookup_transform("turtlebot_blue_object", "camera_color_optical_frame", rclpy.time.Time())
+
+                # Extract translation & rotation
+                trans = transform.transform.translation
+                rot = transform.transform.rotation
+
+                # Convert quaternion to a rotation matrix
+                quat = [rot.x, rot.y, rot.z, rot.w]
+                rot_matrix = tf_transformations.quaternion_matrix(quat)
+
+                # Convert waypoint to a homogeneous coordinate (4x1 vector)
+                point = np.array([x, y, z, 1]).reshape(4, 1)
+
+                # Apply transformation (Rotation + Translation)
+                transformed_point = np.dot(rot_matrix, point)
+                transformed_x = transformed_point[0, 0] + trans.x
+                transformed_y = transformed_point[1, 0] + trans.y
+                transformed_z = transformed_point[2, 0] + trans.z
+
+                self.get_logger().info(f"✅ Transformed: X={transformed_x:.3f}, Y={transformed_y:.3f}, Z={transformed_z:.3f}")
+
+                transformed_waypoints.append((transformed_x, transformed_y, transformed_z))
+
+            except Exception as e:
+                self.get_logger().error(f"🚨 Failed to transform waypoint: {e}")
+
+        return transformed_waypoints
+
+
+    # def move_to_next_waypoint(self):
+    #     """Moves to the next waypoint using fixed rotation & movement in TurtleBot's local frame."""
+    #     if self.current_index >= len(self.square_waypoints):
+    #         #self.get_logger().info("🏁 Square Complete! Stopping.")
+    #         self.stop_robot()
+    #         return
+
+    #     # Get global waypoint
+    #     goal_x_world, goal_y_world = self.square_waypoints[self.current_index][:2]  # Ignore Z
+
+    #     # Get current position & yaw
+    #     robot_x, robot_y = self.robot_position
+    #     current_yaw = math.radians(self.yaw)  # Convert to radians for math functions
+
+    #     # I DOTN TRUST THIS !!!!!!!!!!!!!!!!!!!!!!!!!!! FROM HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #     # Convert world waypoint to TurtleBot’s frame
+    #     dx_world = goal_x_world - robot_x
+    #     dy_world = goal_y_world - robot_y
+
+    #     # Transform to TurtleBot’s local frame (rotating by -current_yaw)
+    #     goal_x_local = dx_world * math.cos(-current_yaw) - dy_world * math.sin(-current_yaw)
+    #     goal_y_local = dx_world * math.sin(-current_yaw) + dy_world * math.cos(-current_yaw)
+
+    #     # Compute the target angle in TurtleBot’s frame
+    #     target_angle = math.degrees(math.atan2(goal_y_local, goal_x_local))
+
+    #     # Compute the shortest rotation direction
+    #     angle_diff = target_angle  # Since we are already in the TurtleBot frame
+    #     if angle_diff > 180:
+    #         angle_diff -= 360
+    #     elif angle_diff < -180:
+    #         angle_diff += 360
+
+    #     # I DONT TRUST THIS TO HERE  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    #     # Compute movement distance (TurtleBot frame)
+    #     distance = math.sqrt(goal_x_local**2 + goal_y_local**2)
+
+    #     self.get_logger().info(f"📍 Target (Local Turtlebot Frame): X={goal_x_local:.3f}, Y={goal_y_local:.3f}")
+    #     self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle (Local): {target_angle:.2f}°")
+    #     self.get_logger().info(f"🔄 Rotating: {angle_diff:.2f}° | 📏 Moving: {distance:.3f}m")
+
+    #     # **Step 1: Rotate**
+    #     self.rotate_fixed(angle_diff, lambda: self.move_forward_fixed(distance))
+
     def move_to_next_waypoint(self):
         """Moves to the next waypoint using fixed rotation & movement in TurtleBot's local frame."""
+        
+        # ✅ Ensure we have position, yaw, and transformed waypoints
+        if not self.ready or not self.square_waypoints:
+            self.get_logger().warn("⚠️ Waiting for both position & orientation before moving.")
+            return
+
+        # ✅ Stop if all waypoints are completed
         if self.current_index >= len(self.square_waypoints):
-            #self.get_logger().info("🏁 Square Complete! Stopping.")
+            self.get_logger().info("🏁 Square Complete! Stopping.")
             self.stop_robot()
             return
 
-        # Get global waypoint
-        goal_x_world, goal_y_world = self.square_waypoints[self.current_index]
+        # ✅ Get next waypoint in TurtleBot's frame
+        goal_x_local, goal_y_local, _ = self.square_waypoints[self.current_index]
 
-        # Get current position & yaw
-        robot_x, robot_y = self.robot_position
-        current_yaw = math.radians(self.yaw)  # Convert to radians for math functions
-
-        # I DOTN TRUST THIS !!!!!!!!!!!!!!!!!!!!!!!!!!! FROM HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        # Convert world waypoint to TurtleBot’s frame
-        dx_world = goal_x_world - robot_x
-        dy_world = goal_y_world - robot_y
-
-        # Transform to TurtleBot’s local frame (rotating by -current_yaw)
-        goal_x_local = dx_world * math.cos(-current_yaw) - dy_world * math.sin(-current_yaw)
-        goal_y_local = dx_world * math.sin(-current_yaw) + dy_world * math.cos(-current_yaw)
-
-        # Compute the target angle in TurtleBot’s frame
+        # ✅ Compute the target angle in TurtleBot’s local frame
         target_angle = math.degrees(math.atan2(goal_y_local, goal_x_local))
 
-        # Compute the shortest rotation direction
-        angle_diff = target_angle  # Since we are already in the TurtleBot frame
+        # ✅ Compute the shortest rotation direction
+        angle_diff = target_angle  # Already in local frame
         if angle_diff > 180:
             angle_diff -= 360
         elif angle_diff < -180:
             angle_diff += 360
 
-        # I DONT TRUST THIS TO HERE  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-        # Compute movement distance (TurtleBot frame)
+        # ✅ Compute movement distance (TurtleBot frame)
         distance = math.sqrt(goal_x_local**2 + goal_y_local**2)
 
         self.get_logger().info(f"📍 Target (Local Turtlebot Frame): X={goal_x_local:.3f}, Y={goal_y_local:.3f}")
         self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle (Local): {target_angle:.2f}°")
         self.get_logger().info(f"🔄 Rotating: {angle_diff:.2f}° | 📏 Moving: {distance:.3f}m")
 
-        # **Step 1: Rotate**
+        # **Step 1: Rotate first**
         self.rotate_fixed(angle_diff, lambda: self.move_forward_fixed(distance))
-
 
 
     def rotate_fixed(self, angle_diff, callback):
