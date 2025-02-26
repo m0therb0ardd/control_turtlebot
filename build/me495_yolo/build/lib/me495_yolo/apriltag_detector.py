@@ -289,7 +289,7 @@
 #     rclpy.spin(node)
 #     node.destroy_node()
 #     rclpy.shutdown()
-?###################
+# ##################
 # import rclpy
 # from rclpy.node import Node
 # from std_msgs.msg import Float32MultiArray
@@ -361,6 +361,8 @@ from geometry_msgs.msg import TransformStamped
 import tf2_ros
 import math
 import message_filters 
+from sensor_msgs.msg import Image, CameraInfo
+
 
 class AprilTagDetector(Node):
     def __init__(self):
@@ -370,6 +372,8 @@ class AprilTagDetector(Node):
         self.turtlebot_position_pub = self.create_publisher(Float32MultiArray, '/turtlebot_position_april', 10)
         self.turtlebot_orientation_pub = self.create_publisher(Float32MultiArray, '/turtlebot_orientation_april', 10)
         self.dancer_position_pub = self.create_publisher(Float32MultiArray, '/dancer_position_april', 10)
+        self.image_publisher = self.create_publisher(Image, "/new_image", 10)
+
 
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
@@ -383,10 +387,23 @@ class AprilTagDetector(Node):
 
         self.get_logger().info("🚀 AprilTag detector initialized with synchronized image & camera_info!")
 
+
     def synced_callback(self, image_msg, camera_info_msg):
-        """This function runs only when image & camera_info are received together."""
-        self.get_logger().info("📸 Image & Camera Info received together ✅")
-        # You can now safely process AprilTags since both image & intrinsics are synced.
+            """This function runs only when image & camera_info are received together."""
+            self.get_logger().info("📸 Image & Camera Info received together ✅")
+
+            # Convert ROS2 image message to OpenCV format
+            cv_image = self.bridge.imgmsg_to_cv2(image_msg, desired_encoding="bgr8")
+
+            # Draw debug text to confirm the image is being processed
+            cv2.putText(cv_image, "AprilTag Processing Active", (50, 50), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+            # Convert back to ROS2 Image message and publish
+            new_image_msg = self.bridge.cv2_to_imgmsg(cv_image, encoding="bgr8")
+            self.image_publisher.publish(new_image_msg)
+
+            self.get_logger().info("📤 Published camera image with AprilTag processing")
 
 
     def apriltag_callback(self, msg):
