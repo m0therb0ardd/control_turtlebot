@@ -377,12 +377,9 @@ class AprilTagDetector(Node):
         self.turtlebot_orientation_pub = self.create_publisher(Float32MultiArray, '/turtlebot_orientation_april', 10)
         self.dancer_position_pub = self.create_publisher(Float32MultiArray, '/dancer_position_april', 10)
         self.image_publisher = self.create_publisher(Image, "/new_image", 10)
-        self.apriltag_sub = self.create_subscription(
-        AprilTagDetectionArray,
-        '/detections',  # Use your actual topic name
-        self.apriltag_callback,
-        10
-    )
+        self.apriltag_sub = self.create_subscription(AprilTagDetectionArray, '/detections',  self.apriltag_callback, 10 )
+        self.create_subscription(CameraInfo, '/camera/camera/color/camera_info', self.camera_info_callback, 10)
+
 
 
 
@@ -395,6 +392,10 @@ class AprilTagDetector(Node):
         # Approximate Time Synchronization (allows slight mismatch)
         self.ts = message_filters.ApproximateTimeSynchronizer([image_sub, info_sub], queue_size=10, slop=0.1)
         self.ts.registerCallback(self.synced_callback)
+
+        self.fx, self.fy = None, None  # Focal lengths
+        self.cx, self.cy = None, None  # Optical center
+
 
         self.get_logger().info("🚀 AprilTag detector initialized with synchronized image & camera_info!")
 
@@ -416,6 +417,14 @@ class AprilTagDetector(Node):
 
             self.get_logger().info("📤 Published camera image with AprilTag processing")
 
+    def camera_info_callback(self, msg):
+        """Extract camera intrinsics from CameraInfo topic."""
+        if self.fx is None:  # Set values only once
+            self.fx, self.fy = msg.k[0], msg.k[4]  # Focal lengths
+            self.cx, self.cy = msg.k[2], msg.k[5]  # Optical center
+            self.get_logger().info(f"📷 Camera Info Received in AprilTag Node: fx={self.fx}, fy={self.fy}, cx={self.cx}, cy={self.cy}")
+
+
 
     def apriltag_callback(self, msg):
         """Processes AprilTag detections and publishes positions + TF frames."""
@@ -427,27 +436,35 @@ class AprilTagDetector(Node):
 
         for detection in msg.detections:
             tag_id = detection.id  # Get the tag ID
-            x, y = detection.centre.x / 1000, detection.centre.y / 1000  # Convert mm → meters
+            # Assume a fixed depth (to match pink object tracking)
+            Z = 1.0  
 
-            self.get_logger().info(f"🔍 Detected AprilTag {tag_id}: X={x:.2f}, Y={y:.2f}")
+            # Convert AprilTag's pixel position to real-world coordinates
+            X = (detection.centre.x - self.cx) * Z / self.fx
+            Y = (detection.centre.y - self.cy) * Z / self.fy
+
+            self.get_logger().info(f"📡 AprilTag Position (Converted from Pixels): X={X:.3f}, Y={Y:.3f}, Z={Z:.3f}")
+
+
+            self.get_logger().info(f"🔍 Detected AprilTag {tag_id}: X={X:.2f}, Y={Y:.2f}")
 
             if tag_id == 4:  # TurtleBot Center
-                pos_msg = Float32MultiArray(data=[x, y, 0.0])  # Ensure Z=0
+                pos_msg = Float32MultiArray(data=[X, Y, Z])  
                 self.turtlebot_position_pub.publish(pos_msg)
-                self.broadcast_tf("turtlebot_position_april", x, y, 0.0)
-                self.get_logger().info(f"📡 Published TurtleBot Position & TF: {x:.2f}, {y:.2f}")
+                self.broadcast_tf("turtlebot_position_april", X, Y, Z)
+                self.get_logger().info(f"📡 Published TurtleBot Position & TF: {X:.2f}, {Y:.2f}")
 
             elif tag_id == 3:  # TurtleBot Front
-                orient_msg = Float32MultiArray(data=[x, y, 0.0])  # Ensure Z=0
+                orient_msg = Float32MultiArray(data=[X, Y, Z])  
                 self.turtlebot_orientation_pub.publish(orient_msg)
-                self.broadcast_tf("turtlebot_front_april", x, y, 0.0)
-                self.get_logger().info(f"🧭 Published TurtleBot Orientation & TF: {x:.2f}, {y:.2f}")
+                self.broadcast_tf("turtlebot_front_april", X, Y, Z)
+                self.get_logger().info(f"🧭 Published TurtleBot Orientation & TF: {X:.2f}, {Y:.2f}")
 
             elif tag_id == 0:  # Dancer
-                dancer_msg = Float32MultiArray(data=[x, y, 0.0])  # Ensure Z=0
+                dancer_msg = Float32MultiArray(data=[X, Y, Z])  #
                 self.dancer_position_pub.publish(dancer_msg)
-                self.broadcast_tf("dancer_position_april", x, y, 0.0)
-                self.get_logger().info(f"💃 Published Dancer Position & TF: {x:.2f}, {y:.2f}")
+                self.broadcast_tf("dancer_position_april", X, Y, Z)
+                self.get_logger().info(f"💃 Published Dancer Position & TF: {X:.2f}, {Y:.2f}")
 
     def broadcast_tf(self, frame_id, x, y, z):
         """Broadcasts TF transform from camera to detected AprilTag."""
