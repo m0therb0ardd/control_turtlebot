@@ -324,7 +324,7 @@ class YoloNode(Node):
         # Convert to real-world coordinates using intrinsics
         X = (u - self.cx) * depth / self.fx
         Y = (v - self.cy) * depth / self.fy
-        Z = depth  # Depth is the Z coordinate
+        Z = 1.0  # force this to constant to make sure its not fuckign things up
 
 
         self.get_logger().info(f" Dancer in Camera Frame: X={X:.3f}, Y={Y:.3f}, Z={Z:.3f}")
