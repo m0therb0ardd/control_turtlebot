@@ -362,17 +362,28 @@ import tf2_ros
 import math
 import message_filters 
 from sensor_msgs.msg import Image, CameraInfo
+from cv_bridge import CvBridge
+import cv2
 
 
 class AprilTagDetector(Node):
     def __init__(self):
         super().__init__('apriltag_detector')
 
+        self.bridge = CvBridge() 
+
         # Publishers for TurtleBot and Dancer positions
         self.turtlebot_position_pub = self.create_publisher(Float32MultiArray, '/turtlebot_position_april', 10)
         self.turtlebot_orientation_pub = self.create_publisher(Float32MultiArray, '/turtlebot_orientation_april', 10)
         self.dancer_position_pub = self.create_publisher(Float32MultiArray, '/dancer_position_april', 10)
         self.image_publisher = self.create_publisher(Image, "/new_image", 10)
+        self.apriltag_sub = self.create_subscription(
+        AprilTagDetectionArray,
+        '/detections',  # Use your actual topic name
+        self.apriltag_callback,
+        10
+    )
+
 
 
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)

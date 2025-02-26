@@ -84,7 +84,14 @@ class YoloNode(Node):
         # **AprilTag Detection (You need an AprilTag library installed)**
         detector = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_APRILTAG_36h11)  # Adjust dictionary as needed
         parameters = cv2.aruco.DetectorParameters()
-        corners, ids, _ = cv2.aruco.detectMarkers(gray, detector, parameters=parameters)
+        #corners, ids, _ = cv2.aruco.detectMarkers(gray, detector, parameters=parameters)
+        aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
+        parameters = cv2.aruco.DetectorParameters()
+        detector = cv2.aruco.ArucoDetector(aruco_dict, parameters)
+        corners, ids, _ = detector.detectMarkers(gray)
+
+        # corners, ids, _ = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
+
 
         if ids is not None:
             cv2.aruco.drawDetectedMarkers(cv_image, corners, ids)  # Draw detected markers
