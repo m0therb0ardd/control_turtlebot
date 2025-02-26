@@ -19,7 +19,7 @@ class YoloNode(Node):
         self.bridge = CvBridge()
 
         # Subscribe to RGB image, depth image, and camera info
-        #self.create_subscription(Image, 'image', self.yolo_callback, 10) // THIS USED TO WORK 
+        #self.create_subscription(Image, 'image', self.yolo_callback, 10) # THIS USED TO WORK 
         self.create_subscription(Image, '/camera/camera/color/image_raw', self.yolo_callback, 10) # THIS WORKS NOW !!! DONT REMOVE 
 
         self.create_subscription(Image, '/camera/camera/depth/image_rect_raw', self.depth_callback, 10)
