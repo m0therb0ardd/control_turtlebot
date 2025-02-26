@@ -434,37 +434,54 @@ class AprilTagDetector(Node):
             self.get_logger().warn("❌ No AprilTags detected!")
             return
 
+        turtlebot_base = None  # Stores (Xb, Yb, Zb) for TurtleBot center
+        turtlebot_front = None  # Stores (Xy, Yy, Zy) for TurtleBot front
+        dancer_position = None  # Stores (Xd, Yd, Zd) for Dancer
+
         for detection in msg.detections:
             tag_id = detection.id  # Get the tag ID
-            # Assume a fixed depth (to match pink object tracking)
-            Z = 1.0  
-
-            # Convert AprilTag's pixel position to real-world coordinates
+            Z = 1.0  # Assume fixed depth for consistency
             X = (detection.centre.x - self.cx) * Z / self.fx
             Y = (detection.centre.y - self.cy) * Z / self.fy
-
-            self.get_logger().info(f"📡 AprilTag Position (Converted from Pixels): X={X:.3f}, Y={Y:.3f}, Z={Z:.3f}")
-
 
             self.get_logger().info(f"🔍 Detected AprilTag {tag_id}: X={X:.2f}, Y={Y:.2f}")
 
             if tag_id == 4:  # TurtleBot Center
+                turtlebot_base = (X, Y, Z)
                 pos_msg = Float32MultiArray(data=[X, Y, Z])  
                 self.turtlebot_position_pub.publish(pos_msg)
                 self.broadcast_tf("turtlebot_position_april", X, Y, Z)
-                self.get_logger().info(f"📡 Published TurtleBot Position & TF: {X:.2f}, {Y:.2f}")
+                self.get_logger().info(f"📡 Published TurtleBot Position: {X:.2f}, {Y:.2f}")
 
             elif tag_id == 3:  # TurtleBot Front
-                orient_msg = Float32MultiArray(data=[X, Y, Z])  
-                self.turtlebot_orientation_pub.publish(orient_msg)
+                turtlebot_front = (X, Y, Z)
                 self.broadcast_tf("turtlebot_front_april", X, Y, Z)
-                self.get_logger().info(f"🧭 Published TurtleBot Orientation & TF: {X:.2f}, {Y:.2f}")
+                self.get_logger().info(f"🧭 Published TurtleBot Front Position: {X:.2f}, {Y:.2f}")
 
-            elif tag_id == 0:  # Dancer
-                dancer_msg = Float32MultiArray(data=[X, Y, Z])  #
+            elif tag_id == 0:  # Dancer Position
+                dancer_position = (X, Y, Z)
+                dancer_msg = Float32MultiArray(data=[X, Y, Z])
                 self.dancer_position_pub.publish(dancer_msg)
                 self.broadcast_tf("dancer_position_april", X, Y, Z)
-                self.get_logger().info(f"💃 Published Dancer Position & TF: {X:.2f}, {Y:.2f}")
+                self.get_logger().info(f"💃 Published Dancer Position: {X:.2f}, {Y:.2f}")
+
+        # ✅ Compute Yaw **ONLY IF** both TurtleBot center & front are detected
+        if turtlebot_base and turtlebot_front:
+            Xb, Yb, _ = turtlebot_base
+            Xy, Yy, _ = turtlebot_front
+
+            # Compute yaw using atan2, same as color tracking
+            dx = Xy - Xb  
+            dy = Yy - Yb  
+            yaw = math.atan2(dy, dx)  
+            yaw_degrees = math.degrees(yaw)
+            yaw_degrees = (yaw_degrees + 360) % 360  # Normalize to 0-360 degrees
+
+            # Publish yaw
+            orient_msg = Float32MultiArray(data=[yaw_degrees])  
+            self.turtlebot_orientation_pub.publish(orient_msg)
+            self.get_logger().info(f"🧭 Published TurtleBot Yaw (AprilTags): {yaw_degrees:.2f}°")
+
 
     def broadcast_tf(self, frame_id, x, y, z):
         """Broadcasts TF transform from camera to detected AprilTag."""
