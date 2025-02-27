@@ -1,5 +1,0 @@
-  File "/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/square_mover.py", line 140
-    transform = self.tf_buffer.can_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time()):
-                                                                                                                         ^
-SyntaxError: invalid syntax
-

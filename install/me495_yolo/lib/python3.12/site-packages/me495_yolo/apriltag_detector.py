@@ -449,7 +449,7 @@ class AprilTagDetector(Node):
             if tag_id == 4:  # TurtleBot Center
                 turtlebot_base = (X, Y, Z)
                 pos_msg = Float32MultiArray(data=[X, Y, Z])  
-                self.turtlebot_position_pub.publish(pos_msg)
+                self.turtlebot_position_pub.publish(pos_msg) #need to publish to trigger callback DO NOT DELETE
                 self.broadcast_tf("turtlebot_position_april", X, Y, Z)
                 self.get_logger().info(f"📡 Published TurtleBot Position: {X:.2f}, {Y:.2f}")
 

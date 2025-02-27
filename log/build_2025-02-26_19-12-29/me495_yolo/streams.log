@@ -1,0 +1,65 @@
+[0.681s] Invoking command in '/home/catherine-maglione/yolo_backup/src/me495_yolo': CMAKE_PREFIX_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs:/home/catherine-maglione/yolo_backup/install/numsr_turtlebot:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor PS1=\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[1;34m\]\u\[\033[00m\]@\[\033[1;32m\]\h\[\033[00m\]:\[\033[1;33m\]\w\[\033[00m\] \[\033[1;36m\]$(parse_git_branch)\[\033[00m\]\$ PYTHONPATH=/home/catherine-maglione/yolo_backup/build/me495_yolo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages:/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/lib/python3.12/site-packages:/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages:/home/catherine-maglione/yolo_home/src/me495_yolo/install/me495_yolo/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/me495_yolo build --build-base /home/catherine-maglione/yolo_backup/build/me495_yolo/build install --record /home/catherine-maglione/yolo_backup/build/me495_yolo/install.log --single-version-externally-managed install_data
+[0.919s] running egg_info
+[0.920s] creating ../../build/me495_yolo/me495_yolo.egg-info
+[0.937s] writing ../../build/me495_yolo/me495_yolo.egg-info/PKG-INFO
+[0.937s] writing dependency_links to ../../build/me495_yolo/me495_yolo.egg-info/dependency_links.txt
+[0.938s] writing entry points to ../../build/me495_yolo/me495_yolo.egg-info/entry_points.txt
+[0.938s] writing top-level names to ../../build/me495_yolo/me495_yolo.egg-info/top_level.txt
+[0.938s] writing manifest file '../../build/me495_yolo/me495_yolo.egg-info/SOURCES.txt'
+[0.974s] reading manifest file '../../build/me495_yolo/me495_yolo.egg-info/SOURCES.txt'
+[0.975s] writing manifest file '../../build/me495_yolo/me495_yolo.egg-info/SOURCES.txt'
+[0.975s] running build
+[0.975s] running build_py
+[0.975s] creating /home/catherine-maglione/yolo_backup/build/me495_yolo/build
+[0.975s] creating /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib
+[0.975s] creating /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.975s] copying me495_yolo/waypoint_follower.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.975s] copying me495_yolo/yolo.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.975s] copying me495_yolo/apriltag_detector.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.975s] copying me495_yolo/rotate_to_90.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.976s] copying me495_yolo/waypoint_hw.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.976s] copying me495_yolo/__init__.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.976s] copying me495_yolo/waypoint.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.976s] copying me495_yolo/odom_yaw_monitor.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.976s] copying me495_yolo/square_mover.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.976s] running install
+[0.980s] running install_lib
+[0.999s] creating /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/waypoint_follower.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/yolo.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/apriltag_detector.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/rotate_to_90.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/waypoint_hw.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/__init__.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/waypoint.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/odom_yaw_monitor.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/square_mover.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.999s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_follower.py to waypoint_follower.cpython-312.pyc
+[1.001s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/yolo.py to yolo.cpython-312.pyc
+[1.002s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/apriltag_detector.py to apriltag_detector.cpython-312.pyc
+[1.003s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/rotate_to_90.py to rotate_to_90.cpython-312.pyc
+[1.003s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_hw.py to waypoint_hw.cpython-312.pyc
+[1.005s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__init__.py to __init__.cpython-312.pyc
+[1.005s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint.py to waypoint.cpython-312.pyc
+[1.007s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/odom_yaw_monitor.py to odom_yaw_monitor.cpython-312.pyc
+[1.007s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/square_mover.py to square_mover.cpython-312.pyc
+[1.008s] running install_data
+[1.008s] creating /home/catherine-maglione/yolo_backup/install/me495_yolo/share/ament_index
+[1.008s] creating /home/catherine-maglione/yolo_backup/install/me495_yolo/share/ament_index/resource_index
+[1.008s] creating /home/catherine-maglione/yolo_backup/install/me495_yolo/share/ament_index/resource_index/packages
+[1.009s] copying resource/me495_yolo -> /home/catherine-maglione/yolo_backup/install/me495_yolo/share/ament_index/resource_index/packages
+[1.009s] copying package.xml -> /home/catherine-maglione/yolo_backup/install/me495_yolo/share/me495_yolo
+[1.009s] copying launch/apriltag_launch.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/share/me495_yolo
+[1.009s] copying config/tags.yaml -> /home/catherine-maglione/yolo_backup/install/me495_yolo/share/me495_yolo
+[1.009s] running install_egg_info
+[1.028s] Copying ../../build/me495_yolo/me495_yolo.egg-info to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info
+[1.028s] running install_scripts
+[1.144s] Installing apriltag_detector script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.144s] Installing rotate_to_90 script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.144s] Installing square_motion script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.145s] Installing square_mover script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.145s] Installing waypoint script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.145s] Installing waypoint_follower script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.145s] Installing yolo script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[1.145s] writing list of installed files to '/home/catherine-maglione/yolo_backup/build/me495_yolo/install.log'
+[1.165s] Invoked command in '/home/catherine-maglione/yolo_backup/src/me495_yolo' returned '0': CMAKE_PREFIX_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs:/home/catherine-maglione/yolo_backup/install/numsr_turtlebot:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor PS1=\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[1;34m\]\u\[\033[00m\]@\[\033[1;32m\]\h\[\033[00m\]:\[\033[1;33m\]\w\[\033[00m\] \[\033[1;36m\]$(parse_git_branch)\[\033[00m\]\$ PYTHONPATH=/home/catherine-maglione/yolo_backup/build/me495_yolo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages:/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/lib/python3.12/site-packages:/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages:/home/catherine-maglione/yolo_home/src/me495_yolo/install/me495_yolo/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/me495_yolo build --build-base /home/catherine-maglione/yolo_backup/build/me495_yolo/build install --record /home/catherine-maglione/yolo_backup/build/me495_yolo/install.log --single-version-externally-managed install_data
