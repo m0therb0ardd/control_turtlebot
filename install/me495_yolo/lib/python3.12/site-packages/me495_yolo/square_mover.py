@@ -108,49 +108,100 @@ class SquareMover(Node):
 
 
     
+    # def transform_waypoints_to_turtlebot(self, waypoints):
+    #     """Transforms waypoints from the camera frame to the TurtleBot’s local frame using TF lookups."""
+    #     transformed_waypoints = []
+
+    #     for x, y, z in waypoints:
+    #         try:
+    #             # Ensure TF buffer is initialized
+    #             # if not hasattr(self, "tf_buffer") or self.tf_buffer is None:
+    #             #     self.get_logger().error("❌ TF buffer not initialized!")
+    #             #     return []
+
+    #             # Wait for transform to become available
+    #             timeout_sec = 5.0  # Max wait time
+    #             start_time = self.get_clock().now().seconds_nanoseconds()[0]
+
+    #             while not self.tf_buffer.lookup_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time()):
+    #                 if self.get_clock().now().seconds_nanoseconds()[0] - start_time > timeout_sec:
+    #                     self.get_logger().error("🚨 Transform still NOT available after waiting!")
+    #                     return []
+    #                 self.get_logger().warn("⏳ Waiting for transform from camera → turtlebot_position_april...")
+    #                 time.sleep(0.5)  # Small delay before retrying
+
+
+    #             # Check if the transform is available BEFORE looking it up
+    #             if not self.tf_buffer.lookup_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time()):
+    #                 self.get_logger().error("🚨 Transform from camera → turtlebot_position_april is NOT available!")
+    #                 return []
+
+    #             # Lookup the transform from the camera frame to the TurtleBot frame
+    #             transform =self.tf_buffer.lookup_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time())
+
+    #             # Extract translation & rotation
+    #             trans = transform.transform.translation
+    #             rot = transform.transform.rotation
+
+    #             # Convert quaternion to a rotation matrix
+    #             quat = [rot.x, rot.y, rot.z, rot.w]
+    #             rot_matrix = tf_transformations.quaternion_matrix(quat)
+
+    #             # Convert waypoint to a homogeneous coordinate (4x1 vector)
+    #             point = np.array([x, y, z, 1]).reshape(4, 1)
+
+    #             # Apply transformation (Rotation + Translation)
+    #             transformed_point = np.dot(rot_matrix, point)
+    #             transformed_x = transformed_point[0, 0] + trans.x
+    #             transformed_y = transformed_point[1, 0] + trans.y
+    #             transformed_z = transformed_point[2, 0] + trans.z
+
+    #             self.get_logger().info(f"✅ Transformed: X={transformed_x:.3f}, Y={transformed_y:.3f}, Z={transformed_z:.3f}")
+
+    #             transformed_waypoints.append((transformed_x, transformed_y, transformed_z))
+
+    #         except Exception as e:
+    #             self.get_logger().error(f"🚨 Failed to transform waypoint: {e}")
+
+    #     return transformed_waypoints
+
     def transform_waypoints_to_turtlebot(self, waypoints):
         """Transforms waypoints from the camera frame to the TurtleBot’s local frame using TF lookups."""
         transformed_waypoints = []
 
         for x, y, z in waypoints:
             try:
-                # Ensure TF buffer is initialized
-                # if not hasattr(self, "tf_buffer") or self.tf_buffer is None:
-                #     self.get_logger().error("❌ TF buffer not initialized!")
-                #     return []
-
-                # Wait for transform to become available
-                timeout_sec = 3.0  # Max wait time
+                timeout_sec = 20.0  # More time for transform to become available
                 start_time = self.get_clock().now().seconds_nanoseconds()[0]
 
-                while not self.tf_buffer.can_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time()):
+                # ✅ Print all available TF frames for debugging
+                frames = self.tf_buffer.all_frames_as_yaml()
+                self.get_logger().info(f"📡 Available TF Frames: \n{frames}")
+
+                # ✅ Correct the frame order (turtlebot_position_april → camera_color_optical_frame)
+                while not self.tf_buffer.can_transform("tag36h11:4", "camera_color_optical_frame", rclpy.time.Time()):
                     if self.get_clock().now().seconds_nanoseconds()[0] - start_time > timeout_sec:
                         self.get_logger().error("🚨 Transform still NOT available after waiting!")
                         return []
-                    self.get_logger().warn("⏳ Waiting for transform from camera → turtlebot_position_april...")
+                    self.get_logger().warn("⏳ Waiting for transform from camera_color_optical_frame →  turtleturtlebot_position_april...")
                     time.sleep(0.5)  # Small delay before retrying
 
+                self.get_logger().warn("FOUNDDDDDDDDDDDDDDDDDDDDDDD")   
+                # ✅ Correct the transform lookup command
+                transform = self.tf_buffer.lookup_transform("tag36h11:4", "camera_color_optical_frame", rclpy.time.Time())
 
-                # Check if the transform is available BEFORE looking it up
-                if not self.tf_buffer.can_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time()):
-                    self.get_logger().error("🚨 Transform from camera → turtlebot_position_april is NOT available!")
-                    return []
-
-                # Lookup the transform from the camera frame to the TurtleBot frame
-                transform = self.tf_buffer.can_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time())
-
-                # Extract translation & rotation
+                # ✅ Extract translation & rotation
                 trans = transform.transform.translation
                 rot = transform.transform.rotation
 
-                # Convert quaternion to a rotation matrix
+                # ✅ Convert quaternion to a rotation matrix
                 quat = [rot.x, rot.y, rot.z, rot.w]
                 rot_matrix = tf_transformations.quaternion_matrix(quat)
 
-                # Convert waypoint to a homogeneous coordinate (4x1 vector)
+                # ✅ Convert waypoint to a homogeneous coordinate (4x1 vector)
                 point = np.array([x, y, z, 1]).reshape(4, 1)
 
-                # Apply transformation (Rotation + Translation)
+                # ✅ Apply transformation (Rotation + Translation)
                 transformed_point = np.dot(rot_matrix, point)
                 transformed_x = transformed_point[0, 0] + trans.x
                 transformed_y = transformed_point[1, 0] + trans.y
