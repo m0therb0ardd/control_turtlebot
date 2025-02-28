@@ -49,10 +49,10 @@ class GoodSquareMover(Node):
 
             # start by just defining the first waypoint of a square movement 
             self.waypoints_camera = [
-                (x-0.25 , y-0.25, 0.0),  # right
-                # (x + 0.132, y + 0.132, 0.0),  # up
-                # (x, y + 0.132, 0.0),  # left
-                # (x, y, 0.0)  # down (back to start)
+                (x-0.18 , y-0.18, 1.0),  # right
+                # (x + 0.132, y + 0.132, 1.0),  # up
+                # (x, y + 0.132, 1.0),  # left
+                # (x, y, 1.0)  # down (back to start)
             ]
 
             self.get_logger().info(f"📍 Original Waypoints (camera Frame): {self.waypoints_camera}")

@@ -40,7 +40,7 @@ class GoodSquareMover(Node):
 
     def position_callback(self, msg):
         """Receives initial position of turtlebot in camera frame from subscription & sets waypoints in camera frame and then also converts waypoitns to turtlebto frame """
-        if self.robot_position is None and self.square_waypoints is None :
+        if (self.robot_position is None) and (self.square_waypoints is None) :
             #self.robot_position = (msg.data[0], msg.data[1])
             #self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
             
@@ -49,10 +49,10 @@ class GoodSquareMover(Node):
 
             # start by just defining the first waypoint of a square movement 
             self.waypoints_camera = [
-                (x-0.25 , y-0.25, 0.0),  # right
-                # (x + 0.132, y + 0.132, 0.0),  # up
-                # (x, y + 0.132, 0.0),  # left
-                # (x, y, 0.0)  # down (back to start)
+                (x-0.18 , y-0.18, 1.0),  # right
+                # (x + 0.132, y + 0.132, 1.0),  # up
+                # (x, y + 0.132, 1.0),  # left
+                # (x, y, 1.0)  # down (back to start)
             ]
 
             self.get_logger().info(f"📍 Original Waypoints (camera Frame): {self.waypoints_camera}")
@@ -65,7 +65,8 @@ class GoodSquareMover(Node):
 
         # check that waypoints have been transformed and we are ready to move 
         if self.yaw is not None and self.square_waypoints is not None:
-            self.robot_position = (msg.data[0], msg.data[1])
+            self.robot_position = (msg.data[0], msg.data[1]) #only fill in robot pos if tranformation happens 
+            self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
             self.ready = True
             self.move_to_next_waypoint()
 
