@@ -40,9 +40,9 @@ class GoodSquareMover(Node):
 
     def position_callback(self, msg):
         """Receives initial position of turtlebot in camera frame from subscription & sets waypoints in camera frame and then also converts waypoitns to turtlebto frame """
-        if self.robot_position or self.square_waypoints is None :
-            self.robot_position = (msg.data[0], msg.data[1])
-            self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
+        if (self.robot_position is None) and (self.square_waypoints is None) :
+            #self.robot_position = (msg.data[0], msg.data[1])
+            #self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
             
             #breaks my robot position into an x and y value
             x, y = (msg.data[0], msg.data[1])
@@ -65,6 +65,8 @@ class GoodSquareMover(Node):
 
         # check that waypoints have been transformed and we are ready to move 
         if self.yaw is not None and self.square_waypoints is not None:
+            self.robot_position = (msg.data[0], msg.data[1]) #only fill in robot pos if tranformation happens 
+            self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
             self.ready = True
             self.move_to_next_waypoint()
 
@@ -214,7 +216,7 @@ class GoodSquareMover(Node):
         if (abs(cross_product)< 0.01) and (dist_front_to_waypoint < dist_center_to_waypoint): #little threshold to check co linearity
             self.get_logger().info(f"Collinear with waypoint moving forward! ")
             self.cmd_vel_pub.publish(Twist())  # stop rotating when aligned --> this means send all zeros 
-            #self.move_forward_fixed() # then move froward 
+            self.move_forward_fixed() # then move froward 
 
         else:
             self.get_logger().info(f" Rotating right.") #right now we are just rotating to the right always 
@@ -230,14 +232,14 @@ class GoodSquareMover(Node):
             twist.angular.z = angular_speed  # rotate left (positive) or right (negative)
             self.cmd_vel_pub.publish(twist)
 
-    def move_forward_fixed(self, speed= 0.1):
+    def move_forward_fixed(self, speed= -0.1): #trying negative speed to see if that means "forward"
         """Moves the TurtleBot forward at a fixed speed until it reaches the waypoint."""
 
         self.get_logger().info(f"🚀 Moving forward at speed: {speed:.2f} m/s")
 
         twist = Twist()
         twist.linear.x = speed
-        self.cmd_vel_ub.publish(twist)
+        self.cmd_vel_pub.publish(twist)
 
         self.create_timer(0.1, self.check_reached_waypoint)
 
