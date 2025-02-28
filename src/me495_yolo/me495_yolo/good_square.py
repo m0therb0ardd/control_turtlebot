@@ -46,7 +46,7 @@ class GoodSquareMover(Node):
 
             # start by just defining the first waypoint of a square movement 
             self.waypoints_camera = [
-                (x , y-1.5, 0.0),  # right
+                (x , y-0.25, 0.0),  # right
                 # (x + 0.132, y + 0.132, 0.0),  # up
                 # (x, y + 0.132, 0.0),  # left
                 # (x, y, 0.0)  # down (back to start)
@@ -175,16 +175,12 @@ class GoodSquareMover(Node):
 
         #if cross product is near 0 we move forward
         if abs(cross_product)< 0.05 and (dist_front_to_waypoint < dist_center_to_waypoint): #little threshold to check co linearity
-            self.get_logger().info(f"Collinear with waypoint! Moving forward.")
-            self.cmd_vel_pub.publish(Twist())  # stop rotating when alined I THINK THIS MEANS IT SENDS ALL ZEROS 
-            #self.move_forward_fixed() # then move froward COMMENTED OUT FOR NOW 
-
-        # elif cross_product > 0:
-        #     self.get_logger().info(f"🔄 Waypoint is to the LEFT. Rotating left.")
-        #     self.rotate_fixed(0.2)  # Rotate left
+            self.get_logger().info(f"Collinear with waypoint! ")
+            self.cmd_vel_pub.publish(Twist())  # stop rotating when aligned --> this means send all zeros 
+            #self.move_forward_fixed() # then move froward 
 
         else:
-            self.get_logger().info(f"🔄 Waypoint is to the RIGHT. Rotating right.")
+            self.get_logger().info(f" Rotating right.") #right now we are just rotating to the right always 
             self.rotate_fixed(-0.1)  # Rotate right
     
     def rotate_fixed(self, angular_speed):
@@ -197,8 +193,34 @@ class GoodSquareMover(Node):
             twist.angular.z = angular_speed  # rotate left (positive) or right (negative)
             self.cmd_vel_pub.publish(twist)
 
-            # Keep rotating and rechecking collinearity
-            # self.create_timer(0.1, self.move_to_next_waypoint)
+    def move_forward_fixed(self, speed= 0.1):
+        """Moves the TurtleBot forward at a fixed speed until it reaches the waypoint."""
+
+        self.get_logger().info(f"🚀 Moving forward at speed: {speed:.2f} m/s")
+
+        twist = Twist()
+        twist.linear.x = speed
+        self.cmd_vel_ub.publish(twist)
+
+        self.create_timer(0.1, self.check_reached_waypoint)
+
+    def check_reached_waypoint(self):
+        Xw, Yw, _ = self.waypoints_camera[self.current_index]  # get coords of current waypoint (this is in camera frame)
+        Xb, Yb = self.robot_position  # get TurtleBot center position (this is in camera frame)
+
+        #compute distance btwn turtlebot center and waypoint 
+        distance_to_waypoint = np.linalg.norm([Xw -Xb, Yw - Yb])
+
+        self.get_logger().info(f"📏 Distance to Waypoint: {distance_to_waypoint:.3f}m")
+
+        #if im at the waypoint (or close enough to it) stop and move to next waypoint which means incrementing my current_index
+
+        if distance_to_waypoint < 0.05:
+            self.get_logger().info(f"🏁 Reached waypoint {self.current_index}! Stopping.")
+            self.cmd_vel_pub.publish(Twist())  # stop rotating when alined --> this means send all zeros 
+            self.current_index += 1  # advance to next waypoint
+            self.move_to_next_waypoint()  # start moving to the next waypoint
+
 
 def main():
     rclpy.init()
