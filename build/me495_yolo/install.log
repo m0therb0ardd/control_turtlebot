@@ -1,3 +1,4 @@
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/good_square.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_follower.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/yolo.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/apriltag_detector.py
@@ -7,6 +8,7 @@
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/odom_yaw_monitor.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/square_mover.py
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/good_square.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/waypoint_follower.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/yolo.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/apriltag_detector.cpython-312.pyc
@@ -27,6 +29,7 @@
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info/top_level.txt
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info/entry_points.txt
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/apriltag_detector
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/good_square
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/rotate_to_90
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/square_motion
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/square_mover

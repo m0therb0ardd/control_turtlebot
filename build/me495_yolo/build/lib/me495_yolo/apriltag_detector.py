@@ -379,6 +379,7 @@ class AprilTagDetector(Node):
         self.image_publisher = self.create_publisher(Image, "/new_image", 10)
         self.apriltag_sub = self.create_subscription(AprilTagDetectionArray, '/detections',  self.apriltag_callback, 10 )
         self.create_subscription(CameraInfo, '/camera/camera/color/camera_info', self.camera_info_callback, 10)
+        self.turtlebot_front_pub = self.create_publisher(Float32MultiArray, '/turtlebot_front_april', 10)  # 🆕 NEW PUBLISHER
 
 
 
@@ -455,6 +456,8 @@ class AprilTagDetector(Node):
 
             elif tag_id == 3:  # TurtleBot Front
                 turtlebot_front = (X, Y, Z)
+                front_msg = Float32MultiArray(data=[X, Y, Z])
+                self.turtlebot_front_pub.publish(front_msg)
                 self.broadcast_tf("turtlebot_front_april", X, Y, Z)
                 self.get_logger().info(f"🧭 Published TurtleBot Front Position: {X:.2f}, {Y:.2f}")
 

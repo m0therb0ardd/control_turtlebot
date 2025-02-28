@@ -33,7 +33,8 @@ setup(
             'square_motion = me495_yolo.square_motion:main',
             'rotate_to_90= me495_yolo.rotate_to_90:main',
             'apriltag_detector = me495_yolo.apriltag_detector:main',
-            'square_mover = me495_yolo.square_mover:main'
+            'square_mover = me495_yolo.square_mover:main',
+            'good_square = me495_yolo.good_square:main'
 
             
         ],

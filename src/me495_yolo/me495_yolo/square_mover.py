@@ -1,3 +1,4 @@
+#SQUARE
 # import rclpy
 # from rclpy.node import Node
 # from geometry_msgs.msg import Twist
@@ -33,7 +34,71 @@
 #             self.get_logger().info("🏁 Square Complete! Stopping.")
 #             self.destroy_node()  # Stop the node
 
+    
+# def main():
+#     rclpy.init()
+#     node = SquareMover()
+#     rclpy.spin(node)
+#     node.destroy_node()
+#     rclpy.shutdown()
 
+
+
+# ##SPIRAL
+# import rclpy
+# from rclpy.node import Node
+# from geometry_msgs.msg import Twist
+# import math
+# import time
+
+# class SquareMover(Node):
+#     def __init__(self):
+#         super().__init__('square_mover')
+#         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+#         self.timer = self.create_timer(0.5, self.run_spiral)  # Runs every 0.5 sec
+#         self.step = 0  # Step counter
+#         self.radius = 0.05  # Initial movement radius
+#         self.angle = 0.3  # Initial turn rate
+#         self.max_speed = 0.2 
+
+#     def run_spiral(self):
+#         """Moves the TurtleBot in an expanding outward spiral with controlled speed."""
+#         twist = Twist()
+
+#         # 🚀 Increase the radius gradually
+#         self.radius += 0.006  # Expand outward
+
+#         # 🔄 Adjust turning rate dynamically
+#         self.angle = max(0.05, self.angle - 0.0005)  # Don't let it get too small
+
+#         # ✅ **Keep the speed capped at `self.max_speed`**
+#         twist.linear.x = min(self.radius, self.max_speed)  # Speed limit
+
+#         # ✅ **Gradually reduce turning speed**
+#         twist.angular.z = self.angle  
+
+#         self.cmd_vel_pub.publish(twist)
+
+#         self.get_logger().info(f"🌪️ Spiral | Radius: {self.radius:.3f} m | Speed: {twist.linear.x:.3f} m/s | Turn Rate: {twist.angular.z:.3f} rad/s")
+
+#         # Stop when the spiral reaches ~0.91m radius (~3ft diameter)
+#         if self.radius >= 0.91:
+#             self.get_logger().info("🏁 Spiral Complete! Stopping.")
+#             self.cmd_vel_pub.publish(Twist())  # Stop movement
+#             self.destroy_node()
+
+#         self.step += 1
+
+
+# def main():
+#     rclpy.init()
+#     node = SquareMover()
+#     rclpy.spin(node)
+#     node.destroy_node()
+#     rclpy.shutdown()
+
+
+#ATTEMPT AT SQUARE WIRTH WAYPOITNS 
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
@@ -63,29 +128,28 @@ class SquareMover(Node):
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
+        self.is_moving = False  
+
 
     def position_callback(self, msg):
         """Receives initial position & sets waypoints."""
-
-
-       
-        if self.robot_position is None :
-            #self.robot_position = (msg.data[0], msg.data[1])
+        if self.robot_position or self.square_waypoints is None :
+            self.robot_position = (msg.data[0], msg.data[1])
             #self.get_logger().info(f"📡 Initial Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
 
-            # ✅ Define waypoints properly
+            # Define waypoints properly
             x, y = (msg.data[0], msg.data[1])
             waypoints_world = [
-                (x + 0.127, y, 0.0),  # right
-                (x + 0.127, y + 0.127, 0.0),  # up
-                (x, y + 0.127, 0.0),  # left
-                (x, y, 0.0)  # down (back to start)
-            ]
+                (x + 0.132, y, 0.0),  # right
+            #     (x + 0.132, y + 0.132, 0.0),  # up
+            #     (x, y + 0.132, 0.0),  # left
+            #     (x, y, 0.0)  # down (back to start)
+            # ]
 
             self.get_logger().info(f"📍 Original Waypoints (World Frame): {waypoints_world}")
 
-         #if turtlebot position april frame found then do this
-        self.square_waypoints = self.transform_waypoints_to_turtlebot(waypoints_world)
+            #if turtlebot position april frame found then do this
+            self.square_waypoints = self.transform_waypoints_to_turtlebot(waypoints_world)
          
         if self.square_waypoints is None: 
              self.get_logger().warn("⚠️ Waypoints not transformed yet. Retrying later...")
@@ -97,25 +161,22 @@ class SquareMover(Node):
         else:
             self.get_logger().error("🚨 Waypoints transformation failed! No transformed waypoints available.")
 
-        # ✅ Check if both position and orientation are available
+        # Check if both position and orientation are available
         if self.yaw is not None and self.square_waypoints:
             self.ready = True
             self.move_to_next_waypoint()
 
 
     def orientation_callback(self, msg):
-        """Receives yaw directly from YOLO node."""
+        """Receives orientation directly from YOLO node."""
         if len(msg.data) >= 1:  # Ensure there's data
             self.yaw = msg.data[0]  # Store received yaw
-            self.get_logger().info(f"🧭 Received TurtleBot Yaw from YOLO: {self.yaw:.2f}°")
+            self.get_logger().info(f"🧭 Received TurtleBot Orientation from YOLO: {self.yaw:.2f}°")
 
-            # ✅ Check if both position and waypoints are available
+            # Check if both position and waypoints are available
             if self.robot_position is not None and self.square_waypoints:
                 self.ready = True
                 self.move_to_next_waypoint()
-
-
-
 
     def transform_waypoints_to_turtlebot(self, waypoints):
         """Transforms waypoints from the camera frame to the TurtleBot’s local frame using TF lookups."""
@@ -126,32 +187,32 @@ class SquareMover(Node):
                 timeout_sec = 20.0  # More time for transform to become available
                 start_time = self.get_clock().now().seconds_nanoseconds()[0]
 
-                # ✅ Print all available TF frames for debugging
-                frames = self.tf_buffer.all_frames_as_yaml()
-                self.get_logger().info(f"📡 Available TF Frames: \n{frames}")
+                # Print all available TF frames for debugging
+                # frames = self.tf_buffer.all_frames_as_yaml()
+                # self.get_logger().info(f"📡 Available TF Frames: \n{frames}")
 
 
-                # ✅ Check if transform is available **once**
+                # Check if transform is available **once**
                 if not self.tf_buffer.can_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time()):
                     self.get_logger().warn("🚨 Transform NOT available yet. Skipping this transformation for now.")
                     return None  # Skip transformation & retry later
 
-                # ✅ Proceed with transformation if found
+                # Proceed with transformation if found
                 self.get_logger().info("✅ Transform available! FOUNDDDDDD Performing transformation.")
                 transform = self.tf_buffer.lookup_transform("turtlebot_position_april", "camera_color_optical_frame", rclpy.time.Time())
 
-                # ✅ Extract translation & rotation
+                # Extract translation & rotation
                 trans = transform.transform.translation
                 rot = transform.transform.rotation
 
-                # ✅ Convert quaternion to a rotation matrix
+                # Convert quaternion to a rotation matrix
                 quat = [rot.x, rot.y, rot.z, rot.w]
                 rot_matrix = tf_transformations.quaternion_matrix(quat)
 
-                # ✅ Convert waypoint to a homogeneous coordinate (4x1 vector)
+                # Convert waypoint to a homogeneous coordinate (4x1 vector)
                 point = np.array([x, y, z, 1]).reshape(4, 1)
 
-                # ✅ Apply transformation (Rotation + Translation)
+                # Apply transformation (Rotation + Translation)
                 transformed_point = np.dot(rot_matrix, point)
                 transformed_x = transformed_point[0, 0] + trans.x
                 transformed_y = transformed_point[1, 0] + trans.y
@@ -166,45 +227,62 @@ class SquareMover(Node):
 
         return transformed_waypoints
 
+# rotate to waypoint stop after this see if works
+#stop rotate
+# translate to waypoint and stop  
+#stope translate
+# modify waypoint to be reached 
+
 
     def move_to_next_waypoint(self):
         """Moves to the next waypoint using fixed rotation & movement in TurtleBot's local frame."""
         
-        # ✅ Ensure we have position, yaw, and transformed waypoints
+        # Ensure we have position, yaw, and transformed waypoints
         if not self.ready or not self.square_waypoints:
             self.get_logger().warn("⚠️ Waiting for both position & orientation before moving.")
             return
         
-        while True:
-            # ✅ Stop if all waypoints are completed
-            if self.current_index >= len(self.square_waypoints):
-                self.get_logger().info("🏁 Square Complete! Stopping.")
-                self.stop_robot()
-                return
+        #while True:
+        # Stop if all waypoints are completed
+        if self.current_index >= len(self.square_waypoints):
+            self.get_logger().info("🏁 Square Complete! Stopping.")
+            self.stop_robot()
+            return
 
-            # ✅ Get next waypoint in TurtleBot's frame
-            goal_x_local, goal_y_local, _ = self.square_waypoints[self.current_index]
+        # Get next waypoint in TurtleBot's frame
+        goal_x_local, goal_y_local, _ = self.square_waypoints[self.current_index]
 
-            # ✅ Compute the target angle in TurtleBot’s local frame
-            target_angle = math.degrees(math.atan2(goal_y_local, goal_x_local))
+        # Compute the target angle in TurtleBot’s local frame
+        target_angle = math.degrees(math.atan2(goal_y_local, goal_x_local))
 
-            # ✅ Compute the shortest rotation direction
-            angle_diff = target_angle  # Already in local frame
-            if angle_diff > 180:
-                angle_diff -= 360
-            elif angle_diff < -180:
-                angle_diff += 360
+        # Compute the required rotation relative to the current orientation
+        angle_diff = (target_angle - self.yaw + 360) % 360  
 
-            # ✅ Compute movement distance (TurtleBot frame)
-            distance = math.sqrt(goal_x_local**2 + goal_y_local**2)
+        # Ensure we rotate the **shortest direction** (left vs right turn)
+        if angle_diff > 180:
+            angle_diff -= 360  # Convert from 0-360 to -180 to 180 range
 
-            self.get_logger().info(f"📍 Target (Local Turtlebot Frame): X={goal_x_local:.3f}, Y={goal_y_local:.3f}")
-            self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle (Local): {target_angle:.2f}°")
-            self.get_logger().info(f"🔄 Rotating: {angle_diff:.2f}° | 📏 Moving: {distance:.3f}m")
+        # ✅ Compute movement distance (TurtleBot frame)
+        distance = math.sqrt(goal_x_local**2 + goal_y_local**2)
 
-            # **Step 1: Rotate first**
+        self.get_logger().info(f"📍 Target (Local Turtlebot Frame): X={goal_x_local:.3f}, Y={goal_y_local:.3f}")
+        self.get_logger().info(f"🧭 Current Yaw: {self.yaw:.2f}° | Target Angle (Local): {target_angle:.2f}°")
+        self.get_logger().info(f"🔄 Rotating: {angle_diff:.2f}° | 📏 Moving: {distance:.3f}m")
+
+        # **Step 1: Rotate first**
+        #self.rotate_fixed(angle_diff, lambda: self.move_forward_fixed(distance))
+        if abs(angle_diff) > 5.0:
             self.rotate_fixed(angle_diff, lambda: self.move_forward_fixed(distance))
+        else:
+            self.get_logger().info(f"✅ Already facing waypoint. Moving forward.")
+            self.move_forward_fixed(distance)
 
+    def stop_movement(self):
+        """Stops movement and advances to next waypoint."""
+        self.cmd_vel_pub.publish(Twist())
+        self.current_index += 1
+        self.is_moving = False  # Allow movement to restart
+        self.move_to_next_waypoint()
 
     def rotate_fixed(self, angle_diff, callback):
         """Rotates a fixed angle without checking yaw updates, then calls the next step."""
@@ -240,14 +318,14 @@ class SquareMover(Node):
         # Delay then move to next waypoint
         self.create_timer(time_to_move, lambda: self.stop_movement())
 
-    def stop_movement(self):
-        """Stops the TurtleBot after moving forward."""
-        self.cmd_vel_pub.publish(Twist())  # Stop movement
-        #self.get_logger().info("✅ Forward movement complete!")
+    # def stop_movement(self):
+    #     """Stops the TurtleBot after moving forward."""
+    #     self.cmd_vel_pub.publish(Twist())  # Stop movement
+    #     #self.get_logger().info("✅ Forward movement complete!")
 
-        # Move to the next waypoint
-        self.current_index += 1
-        self.move_to_next_waypoint()
+    #     # Move to the next waypoint
+    #     self.current_index += 1
+    #     self.move_to_next_waypoint()
 
     def stop_robot(self):
         """Stops the TurtleBot."""
@@ -260,5 +338,4 @@ def main():
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-
 
