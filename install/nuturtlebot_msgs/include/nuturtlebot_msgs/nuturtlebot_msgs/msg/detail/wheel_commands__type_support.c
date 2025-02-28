@@ -4,9 +4,9 @@
 
 #include <string.h>
 
-#include "nuturtlebot_msgs/msg/detail/wheel_commands__functions.h"
-#include "nuturtlebot_msgs/msg/detail/wheel_commands__struct.h"
 #include "nuturtlebot_msgs/msg/detail/wheel_commands__type_support.h"
+#include "nuturtlebot_msgs/msg/detail/wheel_commands__struct.h"
+#include "nuturtlebot_msgs/msg/detail/wheel_commands__functions.h"
 #include "rosidl_typesupport_interface/macros.h"
 
 #ifdef __cplusplus

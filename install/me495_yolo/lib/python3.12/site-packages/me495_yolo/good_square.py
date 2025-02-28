@@ -49,10 +49,10 @@ class GoodSquareMover(Node):
 
             # start by just defining the first waypoint of a square movement 
             self.waypoints_camera = [
-                (x-0.18 , y-0.18, 1.0),  # right
-                # (x + 0.132, y + 0.132, 1.0),  # up
-                # (x, y + 0.132, 1.0),  # left
-                # (x, y, 1.0)  # down (back to start)
+                (x-0.14 , y-0.14, 1.0),  # right
+                #(x - 0.14, y + 0.4, 1.0),  # up
+                (x, y + 0.14, 1.0),  # left
+                #(x, y, 1.0)  # down (back to start)
             ]
 
             self.get_logger().info(f"📍 Original Waypoints (camera Frame): {self.waypoints_camera}")
@@ -73,32 +73,31 @@ class GoodSquareMover(Node):
     def publish_waypoint_marker(self):
         """Publishes waypoint markers to rviz to help with visualization """
         """CHAT GPT DID THIS ONE"""
-        marker = Marker()
-        marker.header.frame_id = "camera_color_optical_frame" #sets reference frame
-        marker.header.stamp = self.get_clock().now().to_msg() # time of frame created 
-        marker.ns = "waypoints" #marker name space this groups togehter all the waypoints for when i have more than one 
-        marker.id = 0
-        marker.type = Marker.SPHERE
-        marker.action = Marker.ADD
+        for i, waypoint in enumerate(self.waypoints_camera):
+            marker = Marker()
+            marker.header.frame_id = "camera_color_optical_frame" #sets reference frame
+            marker.header.stamp = self.get_clock().now().to_msg() # time of frame created 
+            marker.ns = "waypoints" #marker name space this groups togehter all the waypoints for when i have more than one 
+            marker.id = i
+            marker.type = Marker.SPHERE
+            marker.action = Marker.ADD
 
-        # Set position of the waypoint in the camera frame
-        waypoint = self.waypoints_camera[0]
-        marker.pose.position.x = waypoint[0]
-        marker.pose.position.y = waypoint[1]
-        marker.pose.position.z = waypoint[2]  
+            # Set position of the waypoint in the camera frame
+            marker.pose.position.x = waypoint[0]
+            marker.pose.position.y = waypoint[1]
+            marker.pose.position.z = waypoint[2]  
 
-        # Appearance settings
-        marker.scale.x = 0.1  # Sphere size
-        marker.scale.y = 0.1
-        marker.scale.z = 0.1
-        marker.color.r = 1.0  # Red color
-        marker.color.g = 0.0
-        marker.color.b = 0.0
-        marker.color.a = 1.0  # Fully visible
+            # Appearance settings
+            marker.scale.x = 0.1  # Sphere size
+            marker.scale.y = 0.1
+            marker.scale.z = 0.1
+            marker.color.r = 1.0  # Red color
+            marker.color.g = 0.0
+            marker.color.b = 0.0
+            marker.color.a = 1.0  # Fully visible
 
-        self.waypoint_marker_pub.publish(marker)
-        self.get_logger().info(f"📍 Published waypoint marker at X={waypoint[0]:.3f}, Y={waypoint[1]:.3f}")
-
+            self.waypoint_marker_pub.publish(marker)
+            self.get_logger().info(f"📍 Published waypoint marker {i} at X={waypoint[0]:.3f}, Y={waypoint[1]:.3f}")
 
 
 
