@@ -1,11 +1,12 @@
 #imports 
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Point
 from std_msgs.msg import Float32MultiArray
 import tf2_ros
 import tf_transformations
 import numpy as np 
+from visualization_msgs.msg import Marker
 
 
 class GoodSquareMover(Node):
@@ -20,6 +21,8 @@ class GoodSquareMover(Node):
 
         #publishers (publishing movement commands in the turtle frame )
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+        #publisher for waypoints!!!
+        self.waypoint_marker_pub = self.create_publisher(Marker, '/waypoint_marker', 10)
 
         #init some things
         self.robot_position = None #robot position from subscription
@@ -46,7 +49,7 @@ class GoodSquareMover(Node):
 
             # start by just defining the first waypoint of a square movement 
             self.waypoints_camera = [
-                (x , y-0.25, 0.0),  # right
+                (x-0.25 , y-0.25, 0.0),  # right
                 # (x + 0.132, y + 0.132, 0.0),  # up
                 # (x, y + 0.132, 0.0),  # left
                 # (x, y, 0.0)  # down (back to start)
@@ -54,6 +57,8 @@ class GoodSquareMover(Node):
 
             self.get_logger().info(f"📍 Original Waypoints (camera Frame): {self.waypoints_camera}")
 
+            # Publish waypoints to RViz
+            self.publish_waypoint_marker()
 
             #if both necessary frames for turtle orientation and position exist we can transform the waypoints to be in turtlebot frame 
             self.square_waypoints = self.transform_waypoints_to_turtlebot(self.waypoints_camera)
@@ -62,6 +67,38 @@ class GoodSquareMover(Node):
         if self.yaw is not None and self.square_waypoints is not None:
             self.ready = True
             self.move_to_next_waypoint()
+
+    def publish_waypoint_marker(self):
+        """Publishes waypoint markers to rviz to help with visualization """
+        """CHAT GPT DID THIS ONE"""
+        marker = Marker()
+        marker.header.frame_id = "camera_color_optical_frame" #sets reference frame
+        marker.header.stamp = self.get_clock().now().to_msg() # time of frame created 
+        marker.ns = "waypoints" #marker name space this groups togehter all the waypoints for when i have more than one 
+        marker.id = 0
+        marker.type = Marker.SPHERE
+        marker.action = Marker.ADD
+
+        # Set position of the waypoint in the camera frame
+        waypoint = self.waypoints_camera[0]
+        marker.pose.position.x = waypoint[0]
+        marker.pose.position.y = waypoint[1]
+        marker.pose.position.z = waypoint[2]  
+
+        # Appearance settings
+        marker.scale.x = 0.1  # Sphere size
+        marker.scale.y = 0.1
+        marker.scale.z = 0.1
+        marker.color.r = 1.0  # Red color
+        marker.color.g = 0.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0  # Fully visible
+
+        self.waypoint_marker_pub.publish(marker)
+        self.get_logger().info(f"📍 Published waypoint marker at X={waypoint[0]:.3f}, Y={waypoint[1]:.3f}")
+
+
+
 
     def front_callback(self, msg):
         """Receives TurtleBot's front position in the camera frame from apriltag_detection node."""
@@ -175,7 +212,7 @@ class GoodSquareMover(Node):
 
         #if cross product is near 0 we move forward
         if abs(cross_product)< 0.05 and (dist_front_to_waypoint < dist_center_to_waypoint): #little threshold to check co linearity
-            self.get_logger().info(f"Collinear with waypoint! ")
+            self.get_logger().info(f"Collinear with waypoint moving forward! ")
             self.cmd_vel_pub.publish(Twist())  # stop rotating when aligned --> this means send all zeros 
             #self.move_forward_fixed() # then move froward 
 
