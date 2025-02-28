@@ -198,7 +198,7 @@ class GoodSquareMover(Node):
         Xb, Yb = self.robot_position
         Xf, Yf = self.turtlebot_front_position
 
-        #now compute cross product to check co linearity 
+        #now compute 2d cross product to check co linearity 
         cross_product = (Yf - Yb) * (Xw - Xf) - (Xf - Xb) * (Yw - Yf)
 
         #we need to compute distances from waypoint to chekc if turtlebot is facing towards or away
@@ -211,7 +211,7 @@ class GoodSquareMover(Node):
 
 
         #if cross product is near 0 we move forward
-        if abs(cross_product)< 0.05 and (dist_front_to_waypoint < dist_center_to_waypoint): #little threshold to check co linearity
+        if (abs(cross_product)< 0.01) and (dist_front_to_waypoint < dist_center_to_waypoint): #little threshold to check co linearity
             self.get_logger().info(f"Collinear with waypoint moving forward! ")
             self.cmd_vel_pub.publish(Twist())  # stop rotating when aligned --> this means send all zeros 
             #self.move_forward_fixed() # then move froward 
