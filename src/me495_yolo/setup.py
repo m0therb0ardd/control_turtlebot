@@ -34,7 +34,8 @@ setup(
             'rotate_to_90= me495_yolo.rotate_to_90:main',
             'apriltag_detector = me495_yolo.apriltag_detector:main',
             'square_mover = me495_yolo.square_mover:main',
-            'good_square = me495_yolo.good_square:main'
+            'good_square = me495_yolo.good_square:main',
+            'waypoint_april = me495_yolo.waypoint_april:main'
 
             
         ],

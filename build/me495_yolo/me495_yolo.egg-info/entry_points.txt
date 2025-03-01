@@ -5,5 +5,6 @@ rotate_to_90 = me495_yolo.rotate_to_90:main
 square_motion = me495_yolo.square_motion:main
 square_mover = me495_yolo.square_mover:main
 waypoint = me495_yolo.waypoint:main
+waypoint_april = me495_yolo.waypoint_april:main
 waypoint_follower = me495_yolo.waypoint_follower:main
 yolo = me495_yolo.yolo:main

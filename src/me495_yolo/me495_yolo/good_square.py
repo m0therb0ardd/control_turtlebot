@@ -8,7 +8,8 @@ import tf_transformations
 import numpy as np 
 from visualization_msgs.msg import Marker
 
-
+''' little note to self that my entire waypoint system (movement, checking co-linearity adn visualization in rviz
+happens in the camera frame although i do have code in here that transforms waypoints to turtlebot frame i dont actually use it)'''
 class GoodSquareMover(Node):
     def __init__(self):
         #my node
