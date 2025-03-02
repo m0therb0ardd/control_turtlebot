@@ -201,8 +201,9 @@ class GoodSquareMover(Node):
     def move_to_next_waypoint(self):
         """ moves the turtlebot to the next waypoint using co linearity check """
 
-        self.get_logger().info(f"current index {self.current_index}")
-        self.get_logger().info(f"📍 Total waypoints: {len(self.waypoints_camera)} | Waypoints: {self.waypoints_camera}")
+        self.get_logger().info(f"📍 Current waypoint index: {self.current_index} / {len(self.waypoints_camera)-1}")
+        # self.get_logger().info(f"current index {self.current_index}")
+        # self.get_logger().info(f"📍 Total waypoints: {len(self.waypoints_camera)} | Waypoints: {self.waypoints_camera}")
 
 
         #make sure i have waypoints in correct frame before moving 
@@ -282,7 +283,7 @@ class GoodSquareMover(Node):
         #compute distance btwn turtlebot center and waypoint 
         distance_to_waypoint = np.linalg.norm([Xw -Xb, Yw - Yb])
 
-        self.get_logger().info(f"📏 Distance to Waypoint: {distance_to_waypoint:.3f}m")
+        #self.get_logger().info(f"📏 Distance to Waypoint: {distance_to_waypoint:.3f}m")
 
         #if im at the waypoint (or close enough to it) stop and move to next waypoint which means incrementing my current_index
 
