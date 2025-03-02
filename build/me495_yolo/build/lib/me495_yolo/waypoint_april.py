@@ -76,7 +76,7 @@ class WaypointNodeApril(Node):
             self.publish_smoothed_waypoints(smoothed_waypoints)
 
             #reset path and timer for new tracking sequence
-            self.dancer_path = []   
+            #self.dancer_path = []   
             self.start_time = None  
 
     def create_b_spline_waypoints(self, path):

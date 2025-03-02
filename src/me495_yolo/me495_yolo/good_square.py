@@ -7,6 +7,8 @@ import tf2_ros
 import tf_transformations
 import numpy as np 
 from visualization_msgs.msg import Marker
+from nav_msgs.msg import Path
+
 
 ''' little note to self that my entire waypoint system (movement, checking co-linearity adn visualization in rviz
 happens in the camera frame although i do have code in here that transforms waypoints to turtlebot frame i dont actually use it)'''
@@ -19,6 +21,9 @@ class GoodSquareMover(Node):
         self.create_subscription(Float32MultiArray, '/turtlebot_position_april', self.position_callback, 10)
         self.create_subscription(Float32MultiArray, '/turtlebot_orientation_april', self.orientation_callback, 10)
         self.create_subscription(Float32MultiArray, '/turtlebot_front_april', self.front_callback, 10)
+        #adding a subscription to my waypints
+        self.create_subscription(Path, '/dancer_waypoints', self.dancer_waypoints_callback, 10)
+        self.get_logger().info("✅ Subscribed to /dancer_waypoints!")
 
         #publishers (publishing movement commands in the turtle frame )
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -48,13 +53,13 @@ class GoodSquareMover(Node):
             #breaks my robot position into an x and y value
             x, y = (msg.data[0], msg.data[1])
 
-            # start by just defining the first waypoint of a square movement 
-            self.waypoints_camera = [
-                (x-0.14 , y-0.14, 1.0),  # right
-                #(x - 0.14, y + 0.4, 1.0),  # up
-                (x, y + 0.14, 1.0),  # left
-                #(x, y, 1.0)  # down (back to start)
-            ]
+            # # start by just defining the first waypoint of a square movement 
+            # self.waypoints_camera = [
+            #     (x-0.14 , y-0.14, 1.0),  # right
+            #     #(x - 0.14, y + 0.4, 1.0),  # up
+            #     (x, y + 0.14, 1.0),  # left
+            #     #(x, y, 1.0)  # down (back to start)
+            # ]
 
             self.get_logger().info(f"📍 Original Waypoints (camera Frame): {self.waypoints_camera}")
 
@@ -67,9 +72,28 @@ class GoodSquareMover(Node):
         # check that waypoints have been transformed and we are ready to move 
         if self.yaw is not None and self.square_waypoints is not None:
             self.robot_position = (msg.data[0], msg.data[1]) #only fill in robot pos if tranformation happens 
-            self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
+            #self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
+            self.current_index = 0
             self.ready = True
             self.move_to_next_waypoint()
+
+    def dancer_waypoints_callback(self, msg):
+        '''callback function that receives my dancer waypoints from waypoint april and stores them'''
+        #am i entering callback?
+        self.get_logger().info("📡 Callback triggered! Received message from /dancer_waypoints")
+        
+        #make sure i have waypoints
+        if not msg.poses:
+            self.get_logger().warn("Received empty waypoint list")
+            return 
+        
+        self.waypoints_camera= [(pose.pose.position.x, pose.pose.position.y, pose.pose.position.z) for pose in msg.poses]
+        self.get_logger().info(f"📥 Received {len(self.waypoints_camera)} waypoints from dancer!")
+
+        # Start moving once waypoints are received
+        # self.current_index = 0
+        # self.ready = True
+        #self.move_to_next_waypoint()
 
     def publish_waypoint_marker(self):
         """Publishes waypoint markers to rviz to help with visualization """
@@ -106,7 +130,7 @@ class GoodSquareMover(Node):
         """Receives TurtleBot's front position in the camera frame from apriltag_detection node."""
         if len(msg.data) >= 2:
             self.turtlebot_front_position = (msg.data[0], msg.data[1])  # Store (x, y) position
-            self.get_logger().info(f"📍 Front AprilTag Position: X={self.turtlebot_front_position[0]:.3f}, Y={self.turtlebot_front_position[1]:.3f}")
+            #self.get_logger().info(f"📍 Front AprilTag Position: X={self.turtlebot_front_position[0]:.3f}, Y={self.turtlebot_front_position[1]:.3f}")
 
     def transform_waypoints_to_turtlebot(self, waypoints):
             """Transforms waypoints from the camera frame to the TurtleBot’s local frame using TF lookups."""
@@ -167,7 +191,7 @@ class GoodSquareMover(Node):
         """
         if len(msg.data) >= 1:  # Ensure there's data
             self.yaw = msg.data[0]  # Store received yaw
-            self.get_logger().info(f"🧭 Received TurtleBot Orientation from YOLO: {self.yaw:.2f}°")
+            #self.get_logger().info(f"🧭 Received TurtleBot Orientation from YOLO: {self.yaw:.2f}°")
 
         # Check if both position and waypoints are available 
         if self.robot_position is not None and self.square_waypoints is not None:
@@ -184,9 +208,13 @@ class GoodSquareMover(Node):
         
         # my self.current_index is set to 0 in init
         #make sure i still have waypoints to move to 
+        self.get_logger().info(f"current index {self.current_index}")
+
         if self.current_index >= len(self.square_waypoints):
             self.get_logger().info("🏁 No more waypoints. Stopping.")
-            self.stop_robot()
+            #self.stop_robot()
+            self.cmd_vel_pub.publish(Twist())  # this means send all zeros 
+
             return
         
         #if there are still waypoints to go to lets go to the next goal waypoint
