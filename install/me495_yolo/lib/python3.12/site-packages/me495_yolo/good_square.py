@@ -91,8 +91,8 @@ class GoodSquareMover(Node):
         self.get_logger().info(f"📥 Received {len(self.waypoints_camera)} waypoints from dancer!")
 
         # Start moving once waypoints are received
-        # self.current_index = 0
-        # self.ready = True
+        self.current_index = 0
+        self.ready = True
         #self.move_to_next_waypoint()
 
     def publish_waypoint_marker(self):
@@ -201,6 +201,10 @@ class GoodSquareMover(Node):
     def move_to_next_waypoint(self):
         """ moves the turtlebot to the next waypoint using co linearity check """
 
+        self.get_logger().info(f"current index {self.current_index}")
+        self.get_logger().info(f"📍 Total waypoints: {len(self.waypoints_camera)} | Waypoints: {self.waypoints_camera}")
+
+
         #make sure i have waypoints in correct frame before moving 
         if not self.ready == True:
             self.get_logger().warn("⚠️ Waiting for both position & orientation and transformed waypoints before moving.")
@@ -208,9 +212,9 @@ class GoodSquareMover(Node):
         
         # my self.current_index is set to 0 in init
         #make sure i still have waypoints to move to 
-        self.get_logger().info(f"current index {self.current_index}")
+        # self.get_logger().info(f"current index {self.current_index}")
 
-        if self.current_index >= len(self.square_waypoints):
+        if self.current_index >= len(self.waypoints_camera):
             self.get_logger().info("🏁 No more waypoints. Stopping.")
             #self.stop_robot()
             self.cmd_vel_pub.publish(Twist())  # this means send all zeros 
