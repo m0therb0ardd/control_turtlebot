@@ -73,13 +73,14 @@ class GoodSquareMover(Node):
         if self.yaw is not None and self.square_waypoints is not None:
             self.robot_position = (msg.data[0], msg.data[1]) #only fill in robot pos if tranformation happens 
             #self.get_logger().info(f"📡 Initial Turtlebot Position: X={self.robot_position[0]:.3f}, Y={self.robot_position[1]:.3f}")
-            self.current_index = 0
+            #self.current_index = 0
             self.ready = True
             self.move_to_next_waypoint()
 
     def dancer_waypoints_callback(self, msg):
         '''callback function that receives my dancer waypoints from waypoint april and stores them'''
-        #am i entering callback?
+        # if self.ready is False: 
+            #am i entering callback?
         self.get_logger().info("📡 Callback triggered! Received message from /dancer_waypoints")
         
         #make sure i have waypoints
@@ -215,7 +216,7 @@ class GoodSquareMover(Node):
         #make sure i still have waypoints to move to 
         # self.get_logger().info(f"current index {self.current_index}")
 
-        if self.current_index >= len(self.waypoints_camera):
+        if self.current_index >= (len(self.waypoints_camera)-1):
             self.get_logger().info("🏁 No more waypoints. Stopping.")
             #self.stop_robot()
             self.cmd_vel_pub.publish(Twist())  # this means send all zeros 
@@ -231,6 +232,9 @@ class GoodSquareMover(Node):
                 return
         
         Xb, Yb = self.robot_position
+        self.get_logger().info(f" robot position center: {self.robot_position} ") 
+
+
         Xf, Yf = self.turtlebot_front_position
 
         #now compute 2d cross product to check co linearity 
@@ -242,7 +246,7 @@ class GoodSquareMover(Node):
 
         #logging 
         self.get_logger().info(f" Cross Product: {cross_product:.6f} (Closer to 0 means collinear)") 
-        self.get_logger().info(f"📍 Distance to Waypoint | Front: {dist_front_to_waypoint:.3f}, Center: {dist_center_to_waypoint:.3f}")
+        self.get_logger().info(f"📍 Distance to Waypoint {self.current_index} | Front: {dist_front_to_waypoint:.3f}, Center: {dist_center_to_waypoint:.3f}")
 
 
         #if cross product is near 0 we move forward
@@ -287,10 +291,14 @@ class GoodSquareMover(Node):
 
         #if im at the waypoint (or close enough to it) stop and move to next waypoint which means incrementing my current_index
 
-        if distance_to_waypoint < 0.05:
+        if distance_to_waypoint < 0.09:
             self.get_logger().info(f"🏁 Reached waypoint {self.current_index}! Stopping.")
             self.cmd_vel_pub.publish(Twist())  # stop rotating when alined --> this means send all zeros 
             self.current_index += 1  # advance to next waypoint
+            self.get_logger().info(f"INCREMENTING CURRENT INDEX")
+
+
+        
             self.move_to_next_waypoint()  # start moving to the next waypoint
 
 
