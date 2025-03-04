@@ -1,0 +1,37 @@
+[0.478s] Invoking command in '/home/catherine-maglione/yolo_backup/src/me495_yolo': AMENT_PREFIX_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/catherine-maglione/yolo_backup/build/me495_yolo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages:/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/me495_yolo build --build-base /home/catherine-maglione/yolo_backup/build/me495_yolo/build install --record /home/catherine-maglione/yolo_backup/build/me495_yolo/install.log --single-version-externally-managed install_data
+[0.623s] running egg_info
+[0.634s] writing ../../build/me495_yolo/me495_yolo.egg-info/PKG-INFO
+[0.643s] writing dependency_links to ../../build/me495_yolo/me495_yolo.egg-info/dependency_links.txt
+[0.643s] writing entry points to ../../build/me495_yolo/me495_yolo.egg-info/entry_points.txt
+[0.643s] writing top-level names to ../../build/me495_yolo/me495_yolo.egg-info/top_level.txt
+[0.665s] reading manifest file '../../build/me495_yolo/me495_yolo.egg-info/SOURCES.txt'
+[0.665s] writing manifest file '../../build/me495_yolo/me495_yolo.egg-info/SOURCES.txt'
+[0.665s] running build
+[0.665s] running build_py
+[0.666s] copying me495_yolo/good_square.py -> /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo
+[0.666s] running install
+[0.669s] running install_lib
+[0.681s] copying /home/catherine-maglione/yolo_backup/build/me495_yolo/build/lib/me495_yolo/good_square.py -> /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo
+[0.681s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/good_square.py to good_square.cpython-312.pyc
+[0.682s] byte-compiling /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/square_mover.py to square_mover.cpython-312.pyc
+[0.683s]   File "/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/square_mover.py", line 142
+[0.683s]     waypoints_world = [
+[0.683s]                       ^
+[0.683s] SyntaxError: '[' was never closed
+[0.683s] 
+[0.683s] running install_data
+[0.683s] running install_egg_info
+[0.695s] removing '/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info' (and everything under it)
+[0.695s] Copying ../../build/me495_yolo/me495_yolo.egg-info to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info
+[0.695s] running install_scripts
+[0.765s] Installing apriltag_detector script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.765s] Installing good_square script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing rotate_to_90 script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing square_motion script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing square_mover script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing waypoint script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing waypoint_april script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing waypoint_follower script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] Installing yolo script to /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo
+[0.766s] writing list of installed files to '/home/catherine-maglione/yolo_backup/build/me495_yolo/install.log'
+[0.777s] Invoked command in '/home/catherine-maglione/yolo_backup/src/me495_yolo' returned '0': AMENT_PREFIX_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs:${CMAKE_PREFIX_PATH} LD_LIBRARY_PATH=/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/catherine-maglione/yolo_backup/build/me495_yolo/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages:/home/catherine-maglione/yolo_backup/install/nuturtlebot_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/me495_yolo build --build-base /home/catherine-maglione/yolo_backup/build/me495_yolo/build install --record /home/catherine-maglione/yolo_backup/build/me495_yolo/install.log --single-version-externally-managed install_data
