@@ -322,15 +322,15 @@ class YoloNode(Node):
         if pink_world_coords:
             Xp, Yp, Zp = pink_world_coords
             self.broadcast_camera_to_dancer(Xp, Yp, 1.0)
-            self.track_dancer_path(Xp, Yp, 1.0)  # Stores waypoints
             self.latest_pink_world_coords = (Xp, Yp, 1.0)
 
-            # ✅ Publish dancer position
+            # ✅ Publish dancer position (without waypoints)
             dancer_msg = Float32MultiArray()
             dancer_msg.data = [Xp, Yp, 1.0]
             self.dancer_position_pub.publish(dancer_msg)
 
-            self.get_logger().info(f"📡 Published Dancer Position: X={Xp:.3f}, Y={Yp:.3f}, Z={Zp:.3f}")
+            self.get_logger().info(f"📡 Published Dancer Position: X={Xp:.3f}, Y={Yp:.3f}")
+
 
             # ✅ **Start the Timer on First Detection**
             if self.start_time is None:
@@ -425,21 +425,21 @@ class YoloNode(Node):
 
         return cX, cY, world_coords
     
-    def track_dancer_path(self, Xp, Yp, Zp):
-        """Adds dancer waypoints if movement is significant, publishes path."""
-        if len(self.dancer_path) == 0 or (abs(Xp - self.dancer_path[-1][0]) > 0.00 or abs(Yp - self.dancer_path[-1][1]) > 0.05):
-            self.dancer_path.append((Xp, Yp, Zp))
-            self.get_logger().info(f"📍 Added Dancer Waypoint: ({Xp:.3f}, {Yp:.3f}, {Zp:.3f})")
+    # def track_dancer_path(self, Xp, Yp, Zp):
+    #     """Adds dancer waypoints if movement is significant, publishes path."""
+    #     if len(self.dancer_path) == 0 or (abs(Xp - self.dancer_path[-1][0]) > 0.00 or abs(Yp - self.dancer_path[-1][1]) > 0.05):
+    #         self.dancer_path.append((Xp, Yp, Zp))
+    #         self.get_logger().info(f"📍 Added Dancer Waypoint: ({Xp:.3f}, {Yp:.3f}, {Zp:.3f})")
 
-        elapsed_time = time.time() - self.start_time if self.start_time else 0
-        self.get_logger().info(f"⏳ Time elapsed: {elapsed_time:.2f}s (Limit: {self.time_limit}s)")
+    #     elapsed_time = time.time() - self.start_time if self.start_time else 0
+    #     self.get_logger().info(f"⏳ Time elapsed: {elapsed_time:.2f}s (Limit: {self.time_limit}s)")
 
-        if elapsed_time > self.time_limit and self.dancer_path:
-            self.get_logger().info(f"📤 Publishing path with {len(self.dancer_path)} points")
-            path_msg = Float32MultiArray()
-            path_msg.data = [coord for point in self.dancer_path for coord in point]
-            self.path_publisher.publish(path_msg)
-            self.dancer_path = []  # Reset path
+    #     if elapsed_time > self.time_limit and self.dancer_path:
+    #         self.get_logger().info(f"📤 Publishing path with {len(self.dancer_path)} points")
+    #         path_msg = Float32MultiArray()
+    #         path_msg.data = [coord for point in self.dancer_path for coord in point]
+    #         self.path_publisher.publish(path_msg)
+    #         self.dancer_path = []  # Reset path
 
     def track_turtlebot_position(self, Xb, Yb, Zb):
         """Publishes TurtleBot's smoothed position and ensures TF updates even when stationary."""

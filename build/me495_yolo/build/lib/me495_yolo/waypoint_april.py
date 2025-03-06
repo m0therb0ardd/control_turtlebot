@@ -27,7 +27,7 @@ class WaypointNodeApril(Node):
 
         #subscriptions (to april tag position (in camera frame))
         #self.create_subscription(Float32MultiArray, '/dancer_position_april', self.dancer_callback, 10)
-        self.create_subscription(Float32MultiArray, '/dancer_position', self.dancer_callback, 10)
+        self.create_subscription(Float32MultiArray, '/dancer_position_color', self.dancer_callback, 10)
 
         #publishers
         self.waypoint_publisher = self.create_publisher(Path, 'dancer_waypoints', 10)
@@ -54,7 +54,14 @@ class WaypointNodeApril(Node):
         
         x, y = msg.data[:2]  # Extract (X, Y) dancer position
 
-        self.get_logger().info(f"💃 Dancer Position Received: X={x:.3f}, Y={y:.3f}")
+        # Ensure only significant movement is recorded (Threshold = 2cm)
+        #chatgpt wrotw this if statwemtn lets see if it wokrs to elimate bspline issue
+        if len(self.dancer_path) > 0:
+            last_x, last_y, _ = self.dancer_path[-1]
+            if abs(x - last_x) < 0.02 and abs(y - last_y) < 0.02:  # Ignore tiny movements < 2cm
+                return
+
+        #self.get_logger().info(f"💃 Dancer Position Received: X={x:.3f}, Y={y:.3f}")
 
          # Store dancer path for waypoint generation
         self.dancer_path.append((x, y, 1.0))  # Assume Z=1 (2D navigation)1 is to match depth in rviz for visualization 
@@ -77,7 +84,7 @@ class WaypointNodeApril(Node):
             self.publish_smoothed_waypoints(smoothed_waypoints)
 
             #reset path and timer for new tracking sequence
-            #self.dancer_path = []   
+            self.dancer_path = []   
             self.start_time = None  
 
     def create_b_spline_waypoints(self, path):
@@ -101,6 +108,7 @@ class WaypointNodeApril(Node):
             x_smooth, y_smooth, z_smooth = splev(u, tck)
             #ensure returning floats 
             return list(zip(map(float, x_smooth), map(float, y_smooth), map(float, z_smooth)))
+        
         except Exception as e:
             self.get_logger().error(f"🚨 Failed to fit B-spline: {e}")
             return path
