@@ -26,8 +26,9 @@ class WaypointNodeApril(Node):
         super().__init__('waypoint_generator_april')
 
         #subscriptions (to april tag position (in camera frame))
-        self.create_subscription(Float32MultiArray, '/dancer_position_april', self.dancer_callback, 10)
-        
+        #self.create_subscription(Float32MultiArray, '/dancer_position_april', self.dancer_callback, 10)
+        self.create_subscription(Float32MultiArray, '/dancer_position', self.dancer_callback, 10)
+
         #publishers
         self.waypoint_publisher = self.create_publisher(Path, 'dancer_waypoints', 10)
         self.marker_publisher = self.create_publisher(MarkerArray, 'dancer_waypoint_markers', 10)

@@ -35,8 +35,9 @@ setup(
             'apriltag_detector = me495_yolo.apriltag_detector:main',
             'square_mover = me495_yolo.square_mover:main',
             'good_square = me495_yolo.good_square:main',
-            'waypoint_april = me495_yolo.waypoint_april:main'
-
+            'waypoint_april = me495_yolo.waypoint_april:main',
+            'hsv_tuner = me495_yolo.hsv_tuner:main',
+            'color_tracking = me495_yolo.color_tracking:main',
             
         ],
     },

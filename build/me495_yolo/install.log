@@ -2,6 +2,8 @@
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_follower.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/yolo.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/apriltag_detector.py
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/hsv_tuner.py
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/color_tracking.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_april.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/rotate_to_90.py
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/waypoint_hw.py
@@ -13,6 +15,8 @@
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/waypoint_follower.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/yolo.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/apriltag_detector.cpython-312.pyc
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/hsv_tuner.cpython-312.pyc
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/color_tracking.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/waypoint_april.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/rotate_to_90.cpython-312.pyc
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo/__pycache__/waypoint_hw.cpython-312.pyc
@@ -31,7 +35,9 @@
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info/top_level.txt
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/python3.12/site-packages/me495_yolo-0.0.0-py3.12.egg-info/entry_points.txt
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/apriltag_detector
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/color_tracking
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/good_square
+/home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/hsv_tuner
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/rotate_to_90
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/square_motion
 /home/catherine-maglione/yolo_backup/install/me495_yolo/lib/me495_yolo/square_mover

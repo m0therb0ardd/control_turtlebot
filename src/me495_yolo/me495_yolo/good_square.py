@@ -18,10 +18,21 @@ class GoodSquareMover(Node):
         super().__init__('good_square_mover')
 
         #subscriptions (subscribing to turtlebot position and turtlebot orientation and dancer waypoints in the camera frame)
-        self.create_subscription(Float32MultiArray, '/turtlebot_position_april', self.position_callback, 10)
-        self.create_subscription(Float32MultiArray, '/turtlebot_orientation_april', self.orientation_callback, 10)
-        self.create_subscription(Float32MultiArray, '/turtlebot_front_april', self.front_callback, 10)
+        # self.create_subscription(Float32MultiArray, '/turtlebot_position_april', self.position_callback, 10)
+        # self.create_subscription(Float32MultiArray, '/turtlebot_orientation_april', self.orientation_callback, 10)
+        # self.create_subscription(Float32MultiArray, '/turtlebot_front_april', self.front_callback, 10)
+        # self.create_subscription(Path, '/dancer_waypoints', self.dancer_waypoints_callback, 10)
+
+        #subscribe to color instead of april tags in my color-integration branch 
+        self.create_subscription(Float32MultiArray, '/turtlebot_position', self.position_callback, 10)
+        self.create_subscription(Float32MultiArray, '/turtlebot_front', self.front_callback, 10)
+        self.create_subscription(Float32MultiArray, '/turtlebot_orientation', self.front_callback, 10)
+        self.create_subscription(Float32MultiArray, '/dancer_position', self.position_callback, 10)
         self.create_subscription(Path, '/dancer_waypoints', self.dancer_waypoints_callback, 10)
+
+
+
+
 
 
         #publishers (publishing movement commands in the turtle frame )
