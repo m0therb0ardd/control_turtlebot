@@ -32,6 +32,7 @@ class WaypointNodeApril(Node):
         #publishers
         self.waypoint_publisher = self.create_publisher(Path, 'dancer_waypoints', 10)
         self.marker_publisher = self.create_publisher(MarkerArray, 'dancer_waypoint_markers', 10)
+        self.full_path_publisher = self.create_publisher(Path, 'dancer_full_path', 10)
 
         # ROS Parameters for B-spline smoothing
         self.declare_parameter('num_waypoints', 5)
@@ -43,6 +44,7 @@ class WaypointNodeApril(Node):
         #timer limit for waypoint processing (i want to only capture 20 seconds of movement)
         self.start_time = None
         self.time_limit = 10
+        self.tracking_active = False
 
     def dancer_callback(self, msg):
         ''' Process dancer position updated from april tag detection and collect dancer points for timer duration '''
@@ -54,8 +56,17 @@ class WaypointNodeApril(Node):
         
         x, y = msg.data[:2]  # Extract (X, Y) dancer position
 
+        # Start tracking only if first detection
+        if self.start_time is None:
+            self.start_time = time.time()
+            self.tracking_active = True  # Ensure tracking is active
+            self.get_logger().info("⏳ Started recording dancer waypoints")
+
+            # 🚨 Stop adding points if tracking is no longer active
+        if not self.tracking_active:
+            return 
+
         # Ensure only significant movement is recorded (Threshold = 2cm)
-        #chatgpt wrotw this if statwemtn lets see if it wokrs to elimate bspline issue
         if len(self.dancer_path) > 0:
             last_x, last_y, _ = self.dancer_path[-1]
             if abs(x - last_x) < 0.02 and abs(y - last_y) < 0.02:  # Ignore tiny movements < 2cm
@@ -66,9 +77,13 @@ class WaypointNodeApril(Node):
          # Store dancer path for waypoint generation
         self.dancer_path.append((x, y, 1.0))  # Assume Z=1 (2D navigation)1 is to match depth in rviz for visualization 
 
+        self.publish_full_dancer_path()
+
         if self.start_time is None:
             self.start_time = time.time()
             self.get_logger().info("⏳ Started recording dancer waypoints")
+            self.tracking_active = True
+
 
         elapsed_time = time.time() - self.start_time
         #when time limit is reached
@@ -76,7 +91,8 @@ class WaypointNodeApril(Node):
             #print how many waypoints we are about ot generate 
             num_waypoints = self.get_parameter('num_waypoints').value
             self.get_logger().info(f"📤 Time limit reached! Generating {num_waypoints} waypoints from {len(self.dancer_path)} points.")
-            
+            self.tracking_active = False
+
             #generate those smoothed waypoints
             smoothed_waypoints = self.create_b_spline_waypoints(self.dancer_path)
 
@@ -84,8 +100,26 @@ class WaypointNodeApril(Node):
             self.publish_smoothed_waypoints(smoothed_waypoints)
 
             #reset path and timer for new tracking sequence
-            self.dancer_path = []   
-            self.start_time = None  
+            # self.dancer_path = []   
+            # self.start_time = None  
+            # self.tracking_active = False
+
+    def publish_full_dancer_path(self):
+        '''Publish the full dancer path as a continuous path '''
+        path_msg = Path()
+        path_msg.header.frame_id = "camera_color_optical_frame"
+        path_msg.header.stamp = self.get_clock().now().to_msg()
+
+        for x, y, z in self.dancer_path:
+            pose = PoseStamped()
+            pose.header = path_msg.header
+            pose.pose.position.x = x
+            pose.pose.position.y = y
+            pose.pose.position.z = 1.0
+
+            path_msg.poses.append(pose)
+        if self.tracking_active == True:
+            self.full_path_publisher.publish(path_msg)
 
     def create_b_spline_waypoints(self, path):
         """generate smooth waypoints using b spline and published smoothed waypoints"""
@@ -149,9 +183,9 @@ class WaypointNodeApril(Node):
             marker.color.r, marker.color.g, marker.color.b, marker.color.a = 1.0, 0.0, 0.0, 1.0
             marker_array.markers.append(marker)
 
+        
         self.waypoint_publisher.publish(path_msg)
         self.marker_publisher.publish(marker_array)
-
         self.get_logger().info(f"📤 Published {len(waypoints)} smoothed waypoints to /dancer_waypoints")
 
 

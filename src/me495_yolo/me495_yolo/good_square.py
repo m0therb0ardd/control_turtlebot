@@ -24,10 +24,10 @@ class GoodSquareMover(Node):
         # self.create_subscription(Path, '/dancer_waypoints', self.dancer_waypoints_callback, 10)
 
         #subscribe to color instead of april tags in my color-integration branch 
-        self.create_subscription(Float32MultiArray, '/turtlebot_position', self.position_callback, 10)
-        self.create_subscription(Float32MultiArray, '/turtlebot_front', self.front_callback, 10)
-        self.create_subscription(Float32MultiArray, '/turtlebot_orientation', self.front_callback, 10)
-        self.create_subscription(Float32MultiArray, '/dancer_position', self.position_callback, 10)
+        self.create_subscription(Float32MultiArray, '/turtlebot_position_color', self.position_callback, 10)
+        self.create_subscription(Float32MultiArray, '/turtlebot_front_color', self.front_callback, 10)
+        self.create_subscription(Float32MultiArray, '/turtlebot_orientation_color', self.front_callback, 10)
+        self.create_subscription(Float32MultiArray, '/dancer_position_color', self.position_callback, 10)
         self.create_subscription(Path, '/dancer_waypoints', self.dancer_waypoints_callback, 10)
 
 
@@ -123,7 +123,7 @@ class GoodSquareMover(Node):
         """Receives TurtleBot's front position in the camera frame from apriltag_detection node."""
         if len(msg.data) >= 2:
             self.turtlebot_front_position = (msg.data[0], msg.data[1])  # Store (x, y) position
-            self.get_logger().info(f"📍 Front AprilTag Position: X={self.turtlebot_front_position[0]:.3f}, Y={self.turtlebot_front_position[1]:.3f}")
+            #self.get_logger().info(f"📍 Orange Marker Position: X={self.turtlebot_front_position[0]:.3f}, Y={self.turtlebot_front_position[1]:.3f}")
 
 
     def orientation_callback(self, msg):
@@ -159,7 +159,14 @@ class GoodSquareMover(Node):
         #if there are still waypoints to go to lets go to the next goal waypoint
         #to go to next waypoint we first spin and then stop when colinear and then move forward 
         #we need the current waypoints position, the robot postion and the turtlebot front position
-        Xw, Yw, _ = self.waypoints_camera[self.current_index]   
+        Xw, Yw, _ = self.waypoints_camera[self.current_index]  
+
+        if self.robot_position is None:
+            self.get_logger().warn("⚠️ TurtleBot position is UNKNOWN! Waiting for detection...")
+            return  # Exit function and wait for next update
+
+        Xb, Yb = self.robot_position  # ✅ Unpack only if valid
+        
         Xb, Yb = self.robot_position
         Xf, Yf = self.turtlebot_front_position
 
@@ -213,7 +220,7 @@ class GoodSquareMover(Node):
         #compute distance btwn turtlebot center and waypoint 
         distance_to_waypoint = np.linalg.norm([Xw -Xb, Yw - Yb])
 
-        self.get_logger().info(f"📏 Distance to Waypoint: {distance_to_waypoint:.3f}m")
+        #self.get_logger().info(f"📏 Distance to Waypoint: {distance_to_waypoint:.3f}m")
 
         #if im at the waypoint (or close enough to it) stop and move to next waypoint which means incrementing my current_index
 
