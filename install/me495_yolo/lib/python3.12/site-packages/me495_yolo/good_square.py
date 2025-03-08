@@ -190,7 +190,12 @@ class GoodSquareMover(Node):
 
         else:
             #self.get_logger().info(f" Rotating right.") #right now we are just rotating to the right always 
-            self.rotate_fixed(-0.1)  # Rotate right
+            if cross_product < 0:
+                self.rotate_fixed(-0.1)  # Rotate right
+
+            else:
+                self.rotate_fixed(0.1)  # Rotate left 
+
     
     def rotate_fixed(self, angular_speed):
             """Rotates the TurtleBot at a fixed speed until it aligns with the waypoint and co linearity condition is met"""
