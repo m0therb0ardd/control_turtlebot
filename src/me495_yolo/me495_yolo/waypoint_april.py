@@ -35,8 +35,8 @@ class WaypointNodeApril(Node):
         self.full_path_publisher = self.create_publisher(Path, 'dancer_full_path', 10)
 
         # ROS Parameters for B-spline smoothing
-        self.declare_parameter('num_waypoints', 5)
-        self.declare_parameter('smoothness', 10)
+        self.declare_parameter('num_waypoints', 20)
+        self.declare_parameter('smoothness', 0)
 
         #storage for dancer path 
         self.dancer_path = []

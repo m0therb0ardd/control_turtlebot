@@ -33,10 +33,10 @@ class ColorTrackerNode(Node):
         self.cx, self.cy = None, None
         
         # HSV Color Ranges
-        self.pink_range = ((145, 50, 50), (165, 255, 255))  # Dancer
-        self.blue_range = ((30, 40, 140), (90, 255, 255))  # TurtleBot
+        self.pink_range = ((145, 50, 230), (165, 255, 255))  # Dancer
+        self.blue_range = ((45, 40, 140), (90, 255, 255))  # TurtleBot
         #self.yellow_range = ((25, 100, 115), (30, 255, 255))  # TurtleBot Front FLY ZONE
-        self.yellow_range = ((25, 72, 115), (30, 255, 255))
+        self.yellow_range = ((15, 122, 121), (63, 255, 255))
 
         self.get_logger().info("🚀 HSV Color Tracker Initialized")
 

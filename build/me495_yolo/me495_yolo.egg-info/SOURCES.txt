@@ -15,6 +15,7 @@ me495_yolo/color_tracking.py
 me495_yolo/good_square.py
 me495_yolo/hsv_tuner.py
 me495_yolo/light_trail.py
+me495_yolo/light_trail_dark.py
 me495_yolo/odom_yaw_monitor.py
 me495_yolo/rotate_to_90.py
 me495_yolo/square_mover.py
