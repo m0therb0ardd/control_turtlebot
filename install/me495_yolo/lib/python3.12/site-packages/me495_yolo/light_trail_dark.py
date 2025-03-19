@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load the video
-video_path = '/home/catherine-maglione/yolo_backup/videos/push_turtle_path_fast.mp4'  # Corrected path
+video_path = '/home/catherine-maglione/yolo_backup/videos/turtle_313.mp4'  # Corrected path
 cap = cv2.VideoCapture(video_path)
 
 # Check if the video loads correctly
@@ -18,7 +18,7 @@ frame_rate = int(cap.get(cv2.CAP_PROP_FPS))
 print(f"✅ Video loaded successfully! Frame size: {frame_width}x{frame_height}, FPS: {frame_rate}")
 
 # Create an output video writer
-output_path = '/home/catherine-maglione/push_turtle_dark.mp4'
+output_path = '/home/catherine-maglione/turtle313_dark.mp4'
 out = cv2.VideoWriter(output_path, 
                       cv2.VideoWriter_fourcc(*'mp4v'), 
                       frame_rate, 

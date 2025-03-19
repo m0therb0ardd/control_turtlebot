@@ -229,7 +229,8 @@ class GoodSquareMover(Node):
 
         #if im at the waypoint (or close enough to it) stop and move to next waypoint which means incrementing my current_index
 
-        if distance_to_waypoint < 0.09:
+        #if distance_to_waypoint < 0.09:
+        if distance_to_waypoint < 0.06:
             self.get_logger().info(f"🏁 Reached waypoint {self.current_index}! Stopping.")
             self.cmd_vel_pub.publish(Twist())  # stop rotating when alined --> this means send all zeros 
             self.current_index += 1  # advance to next waypoint
